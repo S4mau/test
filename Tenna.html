@@ -136,10 +136,10 @@
   .ghost{ background:#111; color:#fff; border:none; border-radius:12px; padding:10px 16px; font-weight:800; cursor:pointer; transition:transform var(--speed), filter var(--speed); box-shadow:var(--shadow) }
   .ghost:hover{ transform:translateY(-1px) }
 
-.c1 { background:#a29bfe; border: 2px solid white; }
-.c2 { background:#81ecec; border: 2px solid white; }
-.c3 { background:#ff7675; border: 2px solid white; }
-.c4 { background:#fdcb6e; border: 2px solid white; }
+.c1 { background:#000000; border: 2px solid white; }
+.c2 { background:#000000; border: 2px solid white; }
+.c3 { background:#000000; border: 2px solid white; }
+.c4 { background:#000000; border: 2px solid white; }
 
 
   /* small screen tweaks */
@@ -242,44 +242,80 @@ body::after {
 }
 
 
- header {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    background: red;
-    color: white;
-    padding: 15px;
-    text-align: center;
-    font-size: 1.8em;
-    font-weight: bold;
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px; /* space between title and menu */
-  }
+ 
+header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  background: linear-gradient(90deg, #ff5f6d, #ffc371);
+  color: white;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between; /* title left, right container right */
+  align-items: center;
+  font-size: 1.8em;
+  font-weight: bold;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  z-index: 9999;
+}
 
-  .menu-link {
-    color: white;
-    text-decoration: none;
-    font-size: 0.8em;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
+.header-title {
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+}
 
-  .menu-link:hover {
-    text-decoration: underline;
-  }
+/* container for Menu + Fumo */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 50px; /* space between Menu and Fumo */
+}
 
-  .menu-icon {
-    width: 20px;
-    height: 20px;
-  }
+/* Menu styling */
+.menu-link {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9em;
+  background: rgba(255,255,255,0.1);
+  padding: 6px 12px;
+  border-radius: 12px;
+  transition: background 0.25s, transform 0.25s;
+}
 
-  body {
-    margin-top: 70px; /* to prevent content from hiding behind fixed header */
-  }
+.menu-link:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.05);
+}
+
+/* Fumo icon styling */
+#fumoIcon {
+    width: 48px;  /* bigger */
+  height: 48px; /* bigger */
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+/* squish effect on click */
+#fumoIcon:active {
+  transform: scaleX(1.3) scaleY(0.7);
+}
+
+/* push page content below header */
+body {
+  margin-top: 70px;
+}
+
+
+header {
+  /* existing styles… */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25); /* current shadow */
+}
+
+header {
+    /* ... other properties ... */
+    /* REPLACE the current linear-gradient: */
+    background: #5F3E5E; 
+    /* ... other properties ... */
+}
 
   </style>
 </head>
@@ -287,12 +323,13 @@ body::after {
 
 
 
-<header style="background: red; color: white; padding: 15px; text-align: center; font-size: 1.8em; font-weight: bold;">
-   QuizMaster
-  <a href="menu.html" class="menu-link">
-    <img src="funny.ico" alt="Menu Icon" class="menu-icon">
-    Menu
-  </a>
+<header>
+  <div class="header-title"></div>
+  
+  <div class="header-right">
+    <a href="index.html" class="menu-link">Menu</a>
+    <img src="assets/funky.ico" alt="Funky Fumo" id="fumoIcon">
+  </div>
 </header>
 
 
@@ -373,14 +410,26 @@ body::after {
 <script>
 /* ---------------- DATA (add your own Qs easily) ---------------- */
 const QUESTIONS = [
-  { q: "What is 2 + 2?", opts:["3","4","5","22"], correct:"4" },
-  { q: "Capital of France?", opts:["Berlin","Madrid","Paris","Rome"], correct:"Paris" },
-  { q: "Fastest land animal?", opts:["Horse","Cheetah","Tiger","Lion"], correct:"Cheetah" },
-  { q: "Which gas do plants breathe in?", opts:["Oxygen","Carbon Dioxide","Nitrogen","Helium"], correct:"Carbon Dioxide" },
-  { q: "HTML stands for…", opts:["HyperText Markup Language","Home Tool Markup Language","Hyperlinks and Text Markup Language","Hot Mail"], correct:"HyperText Markup Language" },
-  { q: "CSS is used for…", opts:["Database","Styling","Server","AI"], correct:"Styling" },
-  { q: "JS can…", opts:["Style pages","Add interactivity","Host servers","Make coffee"], correct:"Add interactivity" },
-  { q: "1 KB equals…", opts:["100 bytes","1024 bytes","2048 bytes","512 bytes"], correct:"1024 bytes" },
+  { q: "Which company created the 'Halo' series?", opts:["Sony","Microsoft","Nintendo","Valve"], correct:"Microsoft" },
+  { q: "What year was the first 'Super Mario Bros.' released?", opts:["1985","1990","1983","1988"], correct:"1985" },
+  { q: "In gaming, 'FPS' stands for…?", opts:["First Person Shooter","Fast Play Strategy","Full Power Score","Frame Per Second"], correct:"First Person Shooter" },
+  { q: "Which game popularized the Battle Royale genre?", opts:["Fortnite","PUBG","Apex Legends","Call of Duty"], correct:"PUBG" },
+  { q: "The fictional city 'Vice City' is from which game series?", opts:["GTA","Saints Row","Watch Dogs","Sleeping Dogs"], correct:"GTA" },
+  { q: "Which company developed 'The Legend of Zelda'?", opts:["Capcom","Nintendo","Sega","Square Enix"], correct:"Nintendo" },
+  { q: "What is the best-selling video game of all time?", opts:["Minecraft","Tetris","GTA V","Wii Sports"], correct:"Minecraft" },
+  { q: "In esports, 'MOBA' stands for…?", opts:["Multiplayer Online Battle Arena","Massive Online Battle Arena","Mobile Online Battle Adventure","Multiple Opponents Battle Area"], correct:"Multiplayer Online Battle Arena" },
+  { q: "Which console was first to feature motion controls?", opts:["Wii","PS2","Xbox 360","GameCube"], correct:"Wii" },
+  { q: "What is the main character's name in 'Halo'?", opts:["Master Chief","Marcus Fenix","Link","Doom Slayer"], correct:"Master Chief" },
+  { q: "Which game engine is used for Fortnite?", opts:["Unreal Engine","Unity","CryEngine","Source"], correct:"Unreal Engine" },
+  { q: "The term 'NPC' stands for…?", opts:["Non-Playable Character","New Player Challenge","Next Phase Code","No Play Command"], correct:"Non-Playable Character" },
+  { q: "Which game series features 'Ezio Auditore'?", opts:["Assassin's Creed","Far Cry","Hitman","Devil May Cry"], correct:"Assassin's Creed" },
+  { q: "What is the primary genre of 'Dark Souls'?", opts:["Action RPG","Puzzle","Fighting","Simulation"], correct:"Action RPG" },
+  { q: "Which company created the 'Call of Duty' series?", opts:["Activision","Electronic Arts","Ubisoft","Bethesda"], correct:"Activision" },
+  { q: "In 'Overwatch', what type of game mode is 'Payload'?", opts:["Objective-based","Deathmatch","Capture the Flag","Survival"], correct:"Objective-based" },
+  { q: "Which platform is known for indie game hits like 'Hollow Knight'?", opts:["PC","Xbox","PlayStation","Nintendo Switch"], correct:"PC" },
+  { q: "The character 'Link' is from which series?", opts:["Zelda","Final Fantasy","Metroid","Pokemon"], correct:"Zelda" },
+  { q: "Which mobile game popularized 'gacha' mechanics?", opts:["Genshin Impact","Clash of Clans","Pokemon Go","Candy Crush"], correct:"Genshin Impact" },
+  { q: "Esports game 'League of Legends' is developed by…?", opts:["Riot Games","Blizzard","Valve","Epic Games"], correct:"Riot Games" }
 ];
 
 /* BONUS pool (off-topic questions) */
@@ -410,8 +459,8 @@ let timeLeft = 10;
 const TIME_PER_Q = 10;
 /*STAT*/
 /* BATTLE STATE */
-let playerHP =10; // you can tweak
-let bossHP = 1;  // stronger than player
+let playerHP =35; // you can tweak
+let bossHP = 40;  // stronger than player
 const MAX_PLAYER_HP = playerHP;
 const MAX_BOSS_HP = bossHP;
 let bossCooldownId = null;
@@ -581,7 +630,7 @@ function applyPlayerDamage(dmg){
 function scheduleBossAction(){
   clearTimeout(bossCooldownId);
   if(!bossActive) return;
-  const delay = 1000 /*+ Math.floor(Math.random()*6000);*/ // 8-14s
+  const delay = 6000 /*+ Math.floor(Math.random()*6000);*/ // 8-14s
   bossCooldownId = setTimeout(()=>{
     bossDoRandomAbility();
     scheduleBossAction();
@@ -1021,6 +1070,16 @@ function onPlayerDefeated() {
   }, 2000);
 }
 
+
+const fumoSound = document.getElementById('fumoSound');
+const fumoIcon = document.getElementById('fumoIcon');
+
+fumoIcon.addEventListener('click', () => {
+  try {
+    fumoSound.currentTime = 0;
+    fumoSound.play();
+  } catch(e) {}
+});
 
 
 </script>

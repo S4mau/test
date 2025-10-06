@@ -231,73 +231,117 @@ header {
 
 
 <script>
+
+// --- CORRECTED DATA STRUCTURE WITH REDIRECT PATHS ---
 const subjects = {
-    math: { 
-        title: "Math Quizzes", 
-        quizzes: [
-            { name: "In Development", link: "#" },
-            { name: "In Development", link: "#" },
-            { name: "In Development", link: "#" }
-        ]
-    },
-    Literature: { 
-        title: "Literature Quizzes", 
-        quizzes: [
-            { name: "PTBD, BPTT, TT, NK", link: "Literature.html" },
-            { name: "In Development", link: "#" },
-            { name: "In Development", link: "#" }
-        ]
-    },
+ math: { 
+ title: "Math Quizzes", 
+ quizzes: [
+ { name: "In Development", link: "#" },
+ { name: "In Development", link: "#" },
+ { name: "In Development", link: "#" }
+ ]
+ },
+ Literature: { 
+ title: "Literature Quizzes", 
+ quizzes: [
+ { name: "PTBD, BPTT, TT, NK", link: "Literature.html" },
+ { name: "In Development (Tenna)", link: "Tenna.html" }, // Renamed for clarity
+ { name: "In Development", link: "#" }
+ ]
+ },
+    // **CRITICAL: Added the "In Development" subject key for the main menu buttons**
+    "In Development": { 
+        title: "Subject Pending", 
+        message: "This subject is currently under construction. Check back soon!", 
+        quizzes: [] 
+    }
 };
 
-// --- inside showSubject() ---
-function showSubject(subject) {
-    const data = subjects[subject];
-    document.getElementById('quiz-content').innerHTML = `
-        <h3>${data.title}</h3>
-        ${data.quizzes.map(q => `<a href="${q.link}">${q.name}</a>`).join('')}
-    `;
-    document.getElementById('main-menu').style.display = "none";
-    document.getElementById('quiz-screen').style.display = "flex";
+// --- 1. MISSING playClick() FUNCTION ---
+function playClick() {
+ const clickSound = document.getElementById('clickSound');
+ try {
+ clickSound.currentTime = 0;
+ clickSound.play();
+ } catch(e) {}
+}
+
+// --- 2. CORRECTED showSubject() FUNCTION ---
+function showSubject(subjectKey) { // Changed name to subjectKey for clarity
+ playClick(); 
+ 
+ const data = subjects[subjectKey];
+
+    if (data && data.message) {
+        // Handle "In Development" main button click
+        document.getElementById('quiz-content').innerHTML = `
+            <h3>${data.title}</h3>
+            <p style="margin-top: 30px; font-size:1.5rem;">${data.message}</p>
+        `;
+    } else if (data) {
+        // Handle regular subject button click
+        const quizLinks = data.quizzes.map(quiz => {
+            const isUnavailable = quiz.link === '#';
+            const className = isUnavailable ? "unavailable" : ""; 
+
+            // Add listener to prevent navigation on unavailable links
+            const onClickHandler = isUnavailable ? `onclick="event.preventDefault()"` : '';
+            
+            return `<a href="${quiz.link}" class="${className}" ${onClickHandler}>${quiz.name}</a>`;
+        }).join('');
+        
+        document.getElementById('quiz-content').innerHTML = `
+            <h3>${data.title}</h3>
+            ${quizLinks}
+        `;
+    } else {
+        // Fallback for an undefined subject (optional)
+        document.getElementById('quiz-content').innerHTML = '<h3>Error: Subject Not Found</h3>';
+    }
+
+document.getElementById('main-menu').style.display = "none";
+ document.getElementById('quiz-screen').style.display = "flex";
 }
 
 
+// --- 3. showMainMenu() NOW WORKS ---
 function showMainMenu() {
-    // Play sound on click *before* changing screen
-    playClick(); 
-    
-    document.getElementById('quiz-screen').style.display = "none";
-    document.getElementById('main-menu').style.display = "flex";
+// This now works because playClick() is defined!
+ playClick(); 
+
+ document.getElementById('quiz-screen').style.display = "none";
+ document.getElementById('main-menu').style.display = "flex";
 }
 
 
-// --- FUMO SOUND --- (Kept the same)
+// --- FUMO SOUND --- 
 const fumoSound = document.getElementById('fumoSound');
 const fumoIcon = document.getElementById('fumoIcon');
 
 fumoIcon.addEventListener('click', () => {
-    try { fumoSound.currentTime = 0; fumoSound.play(); } catch(e) {}
+ try { fumoSound.currentTime = 0; fumoSound.play(); } catch(e) {}
 });
 
-// --- HEADER MENU LINK SOUND --- (Simplified)
+// --- HEADER MENU LINK SOUND --- 
 document.querySelector('.menu-link').addEventListener('click', (e) => {
-    e.preventDefault();
-    playClick(); // Use the general function
-    
-    // Check if the link is different from the current page before navigating
-    if (e.target.href !== window.location.href) {
-        setTimeout(() => {
-            window.location.href = e.target.href;
-        }, 150); // Small delay to let sound start
-    }
+ e.preventDefault();
+ playClick(); 
+ 
+ if (e.target.href !== window.location.href) {
+ setTimeout(() => {
+ window.location.href = e.target.href;
+ }, 150); 
+ }
 });
 
-// --- Sound for dynamically created quiz links ---
+// --- DYNAMIC QUIZ LINK SOUND & PREVENTING '#' REDIRECTS ---
 document.getElementById('quiz-content').addEventListener('click', (e) => {
-    if (e.target.tagName === 'A') {
-        playClick();
-    }
+if (e.target.tagName === 'A') {
+ playClick();
+ }
 });
+</script>
 </script>
 </body>
 </html>
