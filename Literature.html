@@ -193,14 +193,48 @@ header {
 <script>
 /* ---------------- DATA ---------------- */
 const QUESTIONS = [
-  { q: "What is 2 + 2?", opts:["3","4","5","22"], correct:"4" },
-  { q: "Capital of France?", opts:["Berlin","Madrid","Paris","Rome"], correct:"Paris" },
-  { q: "Fastest land animal?", opts:["Horse","Cheetah","Tiger","Lion"], correct:"Cheetah" },
-  { q: "Which gas do plants breathe in?", opts:["Oxygen","Carbon Dioxide","Nitrogen","Helium"], correct:"Carbon Dioxide" },
-  { q: "HTML stands for…", opts:["HyperText Markup Language","Home Tool Markup Language","Hyperlinks and Text Markup Language","Hot Mail"], correct:"HyperText Markup Language" },
-  { q: "CSS is used for…", opts:["Database","Styling","Server","AI"], correct:"Styling" },
-  { q: "JS can…", opts:["Style pages","Add interactivity","Host servers","Make coffee"], correct:"Add interactivity" },
-  { q: "1 KB equals…", opts:["100 bytes","1024 bytes","2048 bytes","512 bytes"], correct:"1024 bytes" },
+   // Phương thức biểu đạt
+  { q: "Văn bản kể lại chuỗi sự kiện, nhân vật có tình huống rõ ràng. Phương thức biểu đạt chủ yếu là:", opts:["Miêu tả","Tự sự","Biểu cảm","Thuyết minh"], correct:"Tự sự" },
+  { q: "Đoạn văn bày tỏ cảm xúc, tâm trạng của tác giả. Phương thức biểu đạt chính là:", opts:["Nghị luận","Thuyết minh","Biểu cảm","Tự sự"], correct:"Biểu cảm" },
+  { q: "Văn bản cung cấp kiến thức về hiện tượng thiên nhiên, giải thích nguyên nhân, cách thức. Phương thức biểu đạt:", opts:["Tự sự","Thuyết minh","Biểu cảm","Miêu tả"], correct:"Thuyết minh" },
+  { q: "Đoạn văn trình bày quan điểm, phân tích vấn đề xã hội, nhằm thuyết phục người đọc. Phương thức biểu đạt:", opts:["Nghị luận","Miêu tả","Tự sự","Biểu cảm"], correct:"Nghị luận" },
+  { q: "Đoạn văn miêu tả cảnh sông núi với chi tiết sinh động, hình ảnh trực quan. Phương thức biểu đạt:", opts:["Tự sự","Biểu cảm","Miêu tả","Thuyết minh"], correct:"Miêu tả" },
+  { q: "Văn bản kể chuyện kết hợp miêu tả chi tiết nhân vật và cảnh vật, phương thức chủ đạo là:", opts:["Biểu cảm","Tự sự","Miêu tả","Thuyết minh"], correct:"Tự sự" },
+  { q: "Đoạn văn thể hiện thái độ, cảm xúc của tác giả trước sự việc. Phương thức biểu đạt là:", opts:["Biểu cảm","Thuyết minh","Nghị luận","Tự sự"], correct:"Biểu cảm" },
+  { q: "Văn bản giải thích về tác dụng của ánh sáng mặt trời đối với cây cối. Phương thức biểu đạt:", opts:["Tự sự","Thuyết minh","Biểu cảm","Miêu tả"], correct:"Thuyết minh" },
+  { q: "Văn bản phân tích, đưa lập luận để thuyết phục độc giả về một quan điểm xã hội. Phương thức biểu đạt:", opts:["Biểu cảm","Miêu tả","Nghị luận","Tự sự"], correct:"Nghị luận" },
+
+  // Biện pháp tu từ
+  { q: "“Dòng sông lấp lánh như thủy tinh” → biện pháp:", opts:["Ẩn dụ","Nhân hóa","So sánh","Hoán dụ"], correct:"So sánh" },
+  { q: "“Gió hát, lá reo, trời mây cũng cười” → biện pháp:", opts:["Nhân hóa","Nói quá","Điệp ngữ","Chơi chữ"], correct:"Nhân hóa" },
+  { q: "“Vừa chạy vừa hét, vừa khóc vừa cười” → biện pháp:", opts:["Liệt kê","Nói giảm nói tránh","Câu hỏi tu từ","Đảo ngữ"], correct:"Liệt kê" },
+  { q: "“Áo dài thướt tha, tóc mây bay bay, nụ cười như hoa” → biện pháp:", opts:["So sánh","Liệt kê","Nói quá","Chơi chữ"], correct:"Liệt kê" },
+  { q: "“Thời gian trôi nhanh, chẳng chờ ai cả” → biện pháp:", opts:["Nhân hóa","Đảo ngữ","Hoán dụ","Câu hỏi tu từ"], correct:"Nhân hóa" },
+  { q: "“Anh có thể làm gì khác ngoài việc mỉm cười?” → biện pháp:", opts:["Câu hỏi tu từ","Liệt kê","Nói giảm nói tránh","Đảo ngữ"], correct:"Câu hỏi tu từ" },
+  { q: "“Trái tim rực cháy, đôi mắt lấp lánh, giọng nói ấm áp” → biện pháp:", opts:["Liệt kê","Nhân hóa","Nói quá","Chơi chữ"], correct:"Liệt kê" },
+  { q: "“Không phải cái đẹp, mà là cái diễm lệ” → biện pháp:", opts:["Phép đối","Nhân hóa","Điệp ngữ","Hoán dụ"], correct:"Phép đối" },
+  { q: "“Mây trời trôi, mây trời lại bay” → biện pháp:", opts:["Điệp cấu trúc câu","Liệt kê","Đảo ngữ","Câu hỏi tu từ"], correct:"Điệp cấu trúc câu" },
+  { q: "“Ta đây là ai, sao lại lạc vào đây?” → biện pháp:", opts:["Câu hỏi tu từ","Nhân hóa","Liệt kê","Phép đối"], correct:"Câu hỏi tu từ" },
+
+  // Thể thơ
+  { q: "8 câu, mỗi câu 7 chữ, tuân luật bằng trắc, vần theo quy tắc → thể thơ:", opts:["Lục bát","Thất ngôn bát cú","Thất ngôn tứ tuyệt","Song thất lục bát"], correct:"Thất ngôn bát cú" },
+  { q: "4 câu, mỗi câu 7 chữ, vần câu 1,2,4 → thể:", opts:["Thất ngôn tứ tuyệt","Thất ngôn bát cú","Lục bát","Thơ năm chữ"], correct:"Thất ngôn tứ tuyệt" },
+  { q: "2 câu thất + 1 câu lục + 1 câu bát → thể:", opts:["Thất ngôn bát cú","Lục bát","Song thất lục bát","Thơ bốn chữ"], correct:"Song thất lục bát" },
+  { q: "Mỗi câu 6 chữ, ngắt nhịp 2/2/2 → thể:", opts:["Thơ sáu chữ","Thơ năm chữ","Lục bát","Thất ngôn tứ tuyệt"], correct:"Thơ sáu chữ" },
+  { q: "Bài thơ 5 chữ, vần linh hoạt, gần gũi → thể:", opts:["Thơ bốn chữ","Thơ năm chữ","Thơ sáu chữ","Lục bát"], correct:"Thơ năm chữ" },
+  { q: "4 chữ, nhịp ngắn, thường dùng dân ca → thể:", opts:["Thơ bốn chữ","Thơ năm chữ","Thơ sáu chữ","Lục bát"], correct:"Thơ bốn chữ" },
+  { q: "Thể thơ đặc trưng Việt Nam, câu 6 nối câu 8 → thể:", opts:["Lục bát","Thất ngôn bát cú","Song thất lục bát","Thất ngôn tứ tuyệt"], correct:"Lục bát" },
+  { q: "Thơ Đường luật, 8 câu, 7 chữ mỗi câu, luật bằng trắc chặt chẽ → thể:", opts:["Thất ngôn bát cú","Lục bát","Song thất lục bát","Thất ngôn tứ tuyệt"], correct:"Thất ngôn bát cú" },
+
+  // Ngôi kể
+  { q: "Câu chuyện kể từ “tôi”, nhân vật chính là người kể → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi khách quan"], correct:"Ngôi thứ nhất" },
+  { q: "“Anh ấy” kể, người kể đứng ngoài → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi trực tiếp"], correct:"Ngôi thứ ba" },
+  { q: "Người kể trực tiếp đối thoại với người đọc → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi khách quan"], correct:"Ngôi thứ hai" },
+  { q: "Câu chuyện kể từ người ngoài, quan sát tất cả nhân vật → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi trực tiếp"], correct:"Ngôi thứ ba" },
+  { q: "Nhân vật kể về chính mình → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi khách quan"], correct:"Ngôi thứ nhất" },
+  { q: "Người kể trực tiếp nhắc đến “bạn”, “các bạn” → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi trực tiếp"], correct:"Ngôi thứ hai" },
+  { q: "Tác giả kể từ góc nhìn toàn tri → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi trực tiếp"], correct:"Ngôi thứ ba" },
+  { q: "Người kể không tham gia câu chuyện, quan sát khách quan → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi khách quan"], correct:"Ngôi thứ ba" }
 ];
 
 /* ---------------- STATE ---------------- */
