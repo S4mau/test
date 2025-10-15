@@ -24,7 +24,7 @@ body {
     overflow-x: hidden; /* Prevent horizontal scroll */
 
     /* Restoring the background image (adjust path if needed) */
-    background: url('assets/quiz-background.png') center center / cover no-repeat fixed;
+    background: url('assets/bg.png') center center / cover no-repeat fixed;
     position: relative;
 }
 
@@ -33,8 +33,9 @@ header {
     position: fixed;
     top: 0; left: 0;
     width: 100%;
-    height: var(--header-height); /* Explicit height */
-    background: linear-gradient(90deg, #ff5f6d, #ffc371);
+    /* NEW: Dark, moody, low-contrast gradient (Deep Red to Deep Purple) */
+    background: linear-gradient(90deg, #4d0d0d, #330044); 
+    
     color: white;
     padding: 15px 25px;
     display: flex;
@@ -42,7 +43,8 @@ header {
     align-items: center;
     font-size: 1.8em;
     font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    /* Soften the shadow so it doesn't look like a bright light source */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     z-index: 9999;
 }
 
@@ -136,6 +138,7 @@ header {
 }
 .menu-button:hover {
     outline: 2px solid white;
+  
     outline-offset: 4px;
 }
 
@@ -148,7 +151,7 @@ header {
     width: 100%;
 }
 .quiz-card {
-    background: #11111100;
+    background: #00000000;
     border: 3px solid white;
     padding: 20px;
     width: 400px;
@@ -157,9 +160,9 @@ header {
 }
 /* ... (Rest of quiz-screen styles are fine) ... */
 .quiz-card h3 { margin-bottom: 15px; border-bottom: 2px solid white; padding-bottom: 5px; }
-.quiz-card a { display: block; background: #22222200; margin: 8px 0; padding: 10px; border: 2px solid white; text-decoration: none; color: white; transition: 0.2s; }
-.quiz-card a:hover { background: #44444400; transform: scale(1.05); outline: 2px solid white; outline-offset: 4px; }
-.back-button { display: block; margin-bottom: 15px; background: #22222200; padding: 5px 10px; border: 2px solid white; color: white; cursor: pointer; }
+.quiz-card a { display: block; background: #00000000; margin: 8px 0; padding: 10px; border: 2px solid white; text-decoration: none; color: white; transition: 0.2s; }
+.quiz-card a:hover { background: #00000000; transform: scale(1.05); outline: 2px solid white; outline-offset: 4px; }
+.back-button { display: block; margin-bottom: 15px; background: #00000000; padding: 5px 10px; border: 2px solid white; color: white; cursor: pointer; }
 
 
 /* ---------------- ANIMATION ---------------- */
@@ -182,16 +185,7 @@ header {
 }
 
 
-header {
-    /* ... other properties ... */
-    /* REPLACE the current linear-gradient: */
-    background: #5F3E5E; 
-    /* ... other properties ... */
-}
-* {
-  font-weight: normal !important;
-  text-shadow: none !important;
-}
+
 
 </style>
 </head>
@@ -201,7 +195,7 @@ header {
     <div class="header-title"></div>
     <div class="header-right">
         <a href="index.html" class="menu-link">Menu</a>
-        <img src="assets/funky.ico" alt="Funky Fumo" id="fumoIcon">
+     
     </div>
 </header>
 
@@ -212,7 +206,7 @@ header {
         <h2>Select a Subject</h2>
                  <button class="menu-button" onclick="showSubject('math')">Math</button>
                 <button class="menu-button" onclick="showSubject('Literature')">Literature</button>
-                 <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
+                 <button class="menu-button" onclick="showSubject('Biology')">Biology</button>
                 <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
                  <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
                 <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
@@ -226,7 +220,7 @@ header {
         </div>
     </div>
 </div>
-<audio id="fumoSound" src="assets/sounds/fumo.mp3" preload="auto"></audio>
+
 <audio id="clickSound" src="assets/sounds/sfx_click.ogg" preload="auto"></audio>
 
 
@@ -242,14 +236,26 @@ const subjects = {
  { name: "In Development", link: "#" }
  ]
  },
+
+
  Literature: { 
  title: "Literature Quizzes", 
  quizzes: [
- { name: "PTBD, BPTT, TT, NK", link: "Literature.html" },
- { name: "In Development (Tenna)", link: "Tenna.html" }, // Renamed for clarity
+ { name: "PTBD, BPTT, TT, NK", link: "#" },
+ { name: "In Development ", link: "#" }, // Renamed for clarity
  { name: "In Development", link: "#" }
  ]
  },
+
+    "Biology": { 
+        title: "Sinh học 12 Quiz", 
+        quizzes: [
+            { name: "Bai 1,3, 4 dot bien gene", link: "bio.html" },
+                 { name: "In Development ", link: "#" }, // Renamed for clarity
+                   { name: "In Development", link: "#" }
+        ]
+    },
+
     // **CRITICAL: Added the "In Development" subject key for the main menu buttons**
     "In Development": { 
         title: "Subject Pending", 
@@ -304,43 +310,16 @@ document.getElementById('main-menu').style.display = "none";
  document.getElementById('quiz-screen').style.display = "flex";
 }
 
-
-// --- 3. showMainMenu() NOW WORKS ---
+// --- 3. MISSING showMainMenu() FUNCTION ---
 function showMainMenu() {
-// This now works because playClick() is defined!
- playClick(); 
-
- document.getElementById('quiz-screen').style.display = "none";
- document.getElementById('main-menu').style.display = "flex";
+    playClick(); 
+    
+    // Hide the quiz screen
+    document.getElementById('quiz-screen').style.display = "none";
+    
+    // Show the main menu
+    document.getElementById('main-menu').style.display = "flex";
 }
-
-
-// --- FUMO SOUND --- 
-const fumoSound = document.getElementById('fumoSound');
-const fumoIcon = document.getElementById('fumoIcon');
-
-fumoIcon.addEventListener('click', () => {
- try { fumoSound.currentTime = 0; fumoSound.play(); } catch(e) {}
-});
-
-// --- HEADER MENU LINK SOUND --- 
-document.querySelector('.menu-link').addEventListener('click', (e) => {
- e.preventDefault();
- playClick(); 
- 
- if (e.target.href !== window.location.href) {
- setTimeout(() => {
- window.location.href = e.target.href;
- }, 150); 
- }
-});
-
-// --- DYNAMIC QUIZ LINK SOUND & PREVENTING '#' REDIRECTS ---
-document.getElementById('quiz-content').addEventListener('click', (e) => {
-if (e.target.tagName === 'A') {
- playClick();
- }
-});
 </script>
 </script>
 </body>

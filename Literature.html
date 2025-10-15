@@ -133,12 +133,21 @@ header {
 }
 
 header {
-    /* ... other properties ... */
-    /* REPLACE the current linear-gradient: */
-    background: #5F3E5E; 
-    /* ... other properties ... */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: var(--header-height); /* Explicit height */
+    background: linear-gradient(90deg, #ff5f6d, #ffc371);
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.8em;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    z-index: 9999;
 }
-
 </style>
 
 
@@ -148,7 +157,7 @@ header {
   
   <div class="header-right">
     <a href="index.html" class="menu-link">Menu</a>
-    <img src="assets/funky.ico" alt="Funky Fumo" id="fumoIcon">
+
   </div>
 </header>
 
@@ -188,7 +197,6 @@ header {
   <audio id="sClick" src="assets/sounds/sfx_click.ogg" preload="auto"></audio>
   <audio id="sCorrect" src="assets/sounds/Correct-1.ogg" preload="auto"></audio>
   <audio id="sWrong" src="assets/sounds/Incorrect-1.ogg" preload="auto"></audio>
-<audio id="fumoSound" src="assets/sounds/fumo.mp3" preload="auto"></audio>
 
 <script>
 /* ---------------- DATA ---------------- */
@@ -432,18 +440,6 @@ retrySame.addEventListener('click', ()=> {
 /* ---------------- BOOT ---------------- */
 start(true);
 
-
-
-
-const fumoSound = document.getElementById('fumoSound');
-const fumoIcon = document.getElementById('fumoIcon');
-
-fumoIcon.addEventListener('click', () => {
-  try {
-    fumoSound.currentTime = 0;
-    fumoSound.play();
-  } catch(e) {}
-});
 
 
 
