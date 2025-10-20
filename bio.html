@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lively Quiz – Normal Mode+</title>
+<style>
+  :root{ --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.15); --speed:300ms; }
+  *{box-sizing:border-box}
+  body{ margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);}
+.wrap{ 
+    width:min(820px,94vw); 
+    /* Very dark transparent background */
+    background: rgba(0, 0, 0, 0.85); 
+    border-radius: 24px; 
+    /* Muted, dark border (from the ground/earth tones) */
+    border: 3px solid #553A2C; 
+    /* REMOVED all aggressive glow shadows */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5); 
+    padding: 28px; 
+}
+
+  .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+ .badge{ background:#222; color:#EEE; font-weight: 500; } 
+#scoreBadge{ background:#2a5c1f00; color:#D4EDDA; font-weight: 500; }
+
+  .timerRow{ display:flex; align-items:center; gap:10px; margin:8px 0 20px }
+  #timerText{ font-weight:700 }
+  .bar{ flex:1; height:10px; background:#eee; border-radius:999px; overflow:hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,.04); }
+  .fill{ height:100%; width:100%; background:#ffb703; transition:width linear; }
+
+ 
+ .card{ 
+    /* Dark, muted background that is easy on the eyes */
+    background: #181818; 
+    color: #CCCCCC; /* Soft gray text (not pure white) */
+    padding: 24px; 
+    border-radius: var(--radius); 
+    text-align: center; 
+    font-weight: 700; 
+    font-size: 22px; 
+    min-height: 92px;
+    display: flex; align-items: center; justify-content: center; 
+    /* REMOVED all inner/outer glow shadows */
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05); 
+}
+  .fade-in{ animation:fadeIn .28s ease both } .fade-out{ animation:fadeOut .22s ease both }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+  @keyframes fadeOut{ from{opacity:1} to{opacity:0; transform:translateY(-6px)} }
+
+  .answers{ margin-top:16px; display:grid; grid-template-columns:1fr; gap:12px }
+  @media (min-width:640px){ .answers{ grid-template-columns:1fr 1fr } }
+  .btn{ border:none; border-radius:14px; padding:16px; font-size:18px; font-weight:700; color:#fff; cursor:pointer; transition:transform var(--speed), filter var(--speed), box-shadow var(--speed); box-shadow:0 6px 18px rgba(0,0,0,.08); }
+  .btn:hover{ 
+    /* Soft hover effect */
+    transform: translateY(-2px); 
+    filter: none; /* No brightness change */
+    box-shadow: 0 4px 8px rgba(0,0,0,.4); /* Simple lift shadow */
+}
+
+  .btn:disabled{ opacity:.85; cursor:default; transform:none; filter:none }
+
+ .correct{ background:#1E693F !important; color:#fff !important; } /* Darker Green */
+.wrong{ background:#A32727 !important; color:#fff !important; animation:shake .22s linear 2 } /* Darker Red */
+
+  @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .flash{ animation:flash 480ms ease both }
+  @keyframes flash{ 0%{ box-shadow:0 0 0 0 rgba(40,167,69,.6) } 100%{ box-shadow:0 0 0 16px rgba(40,167,69,0) } }
+
+  #board{ display:none; text-align:center; margin-top:10px;  color: white; }
+  #board h2{ margin:8px 0 14px }
+  .line{ opacity:0; transform:translateY(8px); transition:opacity .7s, transform .7s; font-size:18px; }
+  .reveal{ opacity:1; transform:none }
+  .actions{ margin-top:16px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap }
+  .ghost{ background:#2A1E29; color:#fff; border:none; border-radius:12px; padding:10px 16px; font-weight:800; cursor:pointer; transition:transform var(--speed), filter var(--speed); box-shadow:var(--shadow) }
+  .ghost:hover{ transform:translateY(-1px) }
+
+ /* 3. Button Colors (Pulled directly from the image tones) */
+.c1 { background: #5E201B; } /* Muted Brick Red */
+.c2 { background: #554422; } /* Muted Gold/Brown */
+.c3 { background: #3C3C3C; } /* Dark Charcoal Gray */
+.c4 { background: #4D453A; } /* Muted Earthy Brown */
+
+  .stats{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .stat{ background:#222; color:#EEE; font-weight: 500; }
+  body {
+  background-image: url('assets/biology (1).jpg');
+  background-size: cover;       /* fills the screen */
+  background-position: center;  /* centers it */
+  background-repeat: no-repeat; /* no tiling */
+}
+
+
+
+
+.header-title {
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+}
+
+/* container for Menu + Fumo */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 50px; /* space between Menu and Fumo */
+}
+
+/* Menu styling */
+.menu-link {
+  color: white;
+  text-decoration: none;
+  font-size: 0.9em;
+  background: rgba(255,255,255,0.1);
+  padding: 6px 12px;
+  border-radius: 12px;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.menu-link:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.05);
+}
+
+
+/* push page content below header */
+body {
+  margin-top: 70px;
+}
+
+
+header {
+  /* existing styles… */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25); /* current shadow */
+}
+header {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    /* NEW: Dark, moody, low-contrast gradient (Deep Red to Deep Purple) */
+    background: linear-gradient(90deg, #4d0d0d, #330044); 
+    
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.8em;
+    font-weight: bold;
+    /* Soften the shadow so it doesn't look like a bright light source */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    z-index: 9999;
+}
+</style>
+
+
+
+<header>
+  <div class="header-title"></div>
+  
+  <div class="header-right">
+    <a href="index.html" class="menu-link">Menu</a>
+
+  </div>
+</header>
+
+</head>
+<body>
+  <div class="wrap" id="app">
+    <div class="top">
+      <div class="badge" id="qBadge">Question 1/1</div>
+      <div class="stats">
+        <div class="badge" id="scoreBadge">Score: <span id="score">0</span></div>
+        <div class="stat">Correct: <span id="correctCount">0</span></div>
+        <div class="stat">Wrong: <span id="wrongCount">0</span></div>
+        <div class="stat">Time: <span id="elapsed">00:00</span></div>
+      </div>
+    </div>
+
+    <div class="card fade-in" id="question">Loading…</div>
+
+    <div class="answers" id="answers"></div>
+
+    <div id="board">
+      <h2>🎉 Final Score</h2>
+      <div class="line" id="Lscore">Score: 0</div>
+      <div class="line" id="Lcorrect">Correct: 0</div>
+      <div class="line" id="Lwrong">Wrong: 0</div>
+      <div class="line" id="Ltime">Total time: 00:00</div>
+      <div class="line" id="Lavg">Avg / Q: 00:00</div>
+
+      <div class="actions">
+        <button class="ghost" id="retryShuffle">Retry (reshuffle)</button>
+        <button class="ghost" id="retrySame">Retry (same order)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- audio hooks (point to your folder) -->
+  <audio id="sClick" src="assets/sounds/sfx_click.ogg" preload="auto"></audio>
+  <audio id="sCorrect" src="assets/sounds/Correct-1.ogg" preload="auto"></audio>
+  <audio id="sWrong" src="assets/sounds/Incorrect-1.ogg" preload="auto"></audio>
+
+<script>
+/* ---------------- DATA ---------------- */
+const QUESTIONS = [
+   // Bai-1
+
+  { q: "ADN được cấu tạo từ các đơn vị nào?", opts: ["Amino acid + đường + nhóm phosphate", "Nucleotide (đường deoxyribose + base nito + nhóm phosphate)", "Monosaccharide + base + axit", "Base nito + lipid"], correct: "Nucleotide (đường deoxyribose + base nito + nhóm phosphate)" },
+
+  { q: "Các cặp base bổ sung trong ADN là:", opts: ["A — C, G — T", "A — T, G — C", "A — G, T — C", "A — U, G — C"], correct: "A — T, G — C" },
+
+  { q: "Đặc điểm cấu trúc chuỗi ADN là:", opts: ["Một sợi thẳng song song", "Một chuỗi vòng kín", "Hai mạch song song cùng chiều", "Hai mạch xoắn kép, chạy ngược chiều (antiparallel)"], correct: "Hai mạch xoắn kép, chạy ngược chiều (antiparallel)" },
+
+  { q: "Gen được định nghĩa là:", opts: ["Một đoạn ARN mã hóa tRNA", "Một đoạn ADN quy định cấu trúc một sản phẩm chức năng (ví dụ chuỗi polypeptit)", "Toàn bộ ADN của tế bào", "Phân tử protein điều hòa tế bào"], correct: "Một đoạn ADN quy định cấu trúc một sản phẩm chức năng (ví dụ chuỗi polypeptit)" },
+
+  { q: "Kiểu gen khác kiểu hình ở chỗ:", opts: ["Kiểu gen là biểu hiện ra ngoài, kiểu hình là mã di truyền bên trong", "Kiểu gen là tập hợp các alen; kiểu hình là biểu hiện tính trạng", "Hai khái niệm giống nhau", "Kiểu hình là ADN, kiểu gen là protein"], correct: "Kiểu gen là tập hợp các alen; kiểu hình là biểu hiện tính trạng" },
+
+
+];
+
+
+
+/* ---------------- STATE ---------------- */
+let order = [];
+let qi = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let startTime = null;
+let questionStart = null;
+let elapsedInterval = null;
+let lastOrderSaved = []; // for "same order" retry
+
+/* ---------------- DOM ---------------- */
+const qBadge = document.getElementById('qBadge');
+const scoreBadge = document.getElementById('score');
+const correctBadge = document.getElementById('correctCount');
+const wrongBadge = document.getElementById('wrongCount');
+const questionEl = document.getElementById('question');
+const answersEl = document.getElementById('answers');
+const elapsedEl = document.getElementById('elapsed');
+const board = document.getElementById('board');
+const Lscore = document.getElementById('Lscore');
+const Lcorrect = document.getElementById('Lcorrect');
+const Lwrong = document.getElementById('Lwrong');
+const Ltime = document.getElementById('Ltime');
+const Lavg = document.getElementById('Lavg');
+const retryShuffle = document.getElementById('retryShuffle');
+const retrySame = document.getElementById('retrySame');
+
+const sClick = document.getElementById('sClick');
+const sCorrect = document.getElementById('sCorrect');
+const sWrong = document.getElementById('sWrong');
+
+/* ---------------- UTIL ---------------- */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+function formatTime(ms){
+  const s = Math.floor(ms/1000);
+  const mm = String(Math.floor(s/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  return `${mm}:${ss}`;
+}
+
+/* ---------------- QUIZ FLOW ---------------- */
+function start(reshuffle=true, preserveOrder=false){
+  // reset stats
+  score = 0; correctCount = 0; wrongCount = 0;
+  qi = 0;
+
+  // create order
+  order = Array.from({length: QUESTIONS.length}, (_,i)=>i);
+  if(reshuffle) shuffle(order);
+  if(preserveOrder && lastOrderSaved.length===order.length) order = [...lastOrderSaved];
+  lastOrderSaved = [...order];
+
+  // timer
+  startTime = Date.now();
+  questionStart = Date.now();
+  if(elapsedInterval) clearInterval(elapsedInterval);
+  elapsedInterval = setInterval(()=> {
+    elapsedEl.textContent = formatTime(Date.now()-startTime);
+  }, 250);
+
+  // UI
+  board.style.display = 'none';
+  questionEl.style.display = 'flex';
+  answersEl.style.display = 'grid';
+  updateBadges();
+  renderQuestion();
+}
+
+function renderQuestion(){
+  if(qi >= order.length){ return finish(); }
+
+  // animate swap
+  questionEl.classList.remove('fade-in'); questionEl.classList.add('fade-out');
+  setTimeout(()=>{
+    const q = QUESTIONS[order[qi]];
+    questionEl.textContent = q.q;
+    questionEl.classList.remove('fade-out'); questionEl.classList.add('fade-in');
+
+    qBadge.textContent = `Question ${qi+1}/${order.length}`;
+
+    answersEl.innerHTML = '';
+    const opts = shuffle([...q.opts]); // randomize answer order
+    const colorClasses = shuffle(['c1','c2','c3','c4']);
+    opts.forEach((opt, idx)=>{
+      const btn = document.createElement('button');
+      btn.className = `btn ${colorClasses[idx]}`;
+      btn.textContent = opt;
+      btn.dataset.correct = (opt === q.correct) ? '1':'0';
+      // play click sound on mousedown for snappy feel, but still evaluate on click
+      btn.addEventListener('mousedown', ()=> { try { sClick.currentTime=0; sClick.play(); } catch(e){} });
+      btn.addEventListener('click', ()=> choose(btn));
+      answersEl.appendChild(btn);
+    });
+
+    // mark question start time
+    questionStart = Date.now();
+  }, 180);
+}
+
+function lockAnswers(){
+  document.querySelectorAll('.btn').forEach(b=> b.disabled = true);
+}
+
+function choose(btn){
+  if(btn.disabled) return;
+  lockAnswers();
+
+  const isCorrect = btn.dataset.correct === '1';
+
+  // compute time per question if needed later
+  const qTime = Date.now() - questionStart;
+
+  if(isCorrect){
+    btn.classList.add('correct','flash');
+    score += 1;
+    correctCount += 1;
+    try { sCorrect.currentTime = 0; sCorrect.play(); } catch(e){}
+    // highlight only chosen correct (no other wrong highlight needed)
+    document.querySelectorAll('.btn').forEach(b => {
+      if(b.dataset.correct === '1') b.classList.add('correct');
+      b.disabled = true;
+    });
+  } else {
+    wrongCount += 1;
+    try { sWrong.currentTime = 0; sWrong.play(); } catch(e){}
+    // mark ALL wrong answers red and the correct one green
+    document.querySelectorAll('.btn').forEach(b=>{
+      if(b.dataset.correct === '1'){
+        b.classList.add('correct');
+      }else{
+        b.classList.add('wrong');
+      }
+      b.disabled = true;
+    });
+    // also add small red effect to the clicked button (it already gets wrong class)
+  }
+
+  updateBadges();
+  // next question after a pause so user sees feedback
+  setTimeout(()=> {
+    qi++;
+    renderQuestion();
+  }, 950);
+}
+
+function finish(){
+  clearInterval(elapsedInterval);
+  const totalMs = Date.now() - startTime;
+  questionEl.style.display = 'none';
+  answersEl.style.display = 'none';
+  board.style.display = 'block';
+
+  // fill final stats
+  Lscore.textContent = `Score: ${score} / ${QUESTIONS.length}`;
+  Lcorrect.textContent = `Correct: ${correctCount}`;
+  Lwrong.textContent = `Wrong: ${wrongCount}`;
+  Ltime.textContent = `Total time: ${formatTime(totalMs)}`;
+  const avgMs = totalMs / QUESTIONS.length;
+  Lavg.textContent = `Avg / Q: ${formatTime(Math.round(avgMs))}`;
+
+  // reveal animations (stagger)
+  [Lscore,Lcorrect,Lwrong,Ltime,Lavg].forEach((el, i) => {
+    setTimeout(()=> el.classList.add('reveal'), 80 * (i+1));
+  });
+  // show retry buttons enabled
+  retryShuffle.disabled = false;
+  retrySame.disabled = false;
+}
+
+function updateBadges(){
+  document.getElementById('score').textContent = score;
+  correctBadge.textContent = correctCount;
+  wrongBadge.textContent = wrongCount;
+}
+
+/* ---------------- RESTART BUTTON HOOKS ---------------- */
+retryShuffle.addEventListener('click', ()=> {
+  retryShuffle.disabled = true; retrySame.disabled = true;
+  start(true, false);
+});
+retrySame.addEventListener('click', ()=> {
+  retryShuffle.disabled = true; retrySame.disabled = true;
+  start(false, true);
+});
+
+/* ---------------- BOOT ---------------- */
+start(true);
+
+
+
+
+</script>
+</body>
+</html>
