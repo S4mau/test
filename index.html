@@ -204,9 +204,9 @@ header {
 
     <div id="main-menu">
         <h2>Select a Subject</h2>
-                 <button class="menu-button" onclick="showSubject('math')">Math</button>
+                 <button class="menu-button" onclick="showSubject('Physic')">Physic</button>
                 <button class="menu-button" onclick="showSubject('Literature')">Literature</button>
-                 <button class="menu-button" onclick="showSubject('Biology')">Biology</button>
+                 <button class="menu-button" onclick="showSubject('KTPL')">KTPL</button>
                 <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
                  <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
                 <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
@@ -228,12 +228,12 @@ header {
 
 // --- CORRECTED DATA STRUCTURE WITH REDIRECT PATHS ---
 const subjects = {
- math: { 
- title: "Math Quizzes", 
+ Physic: { 
+ title: "Physic Quizzes", 
  quizzes: [
- { name: "Prototype", link: "NewPrototype.html" },
- { name: "In Development", link: "#" },
- { name: "In Development", link: "#" }
+ { name: "GK1-Bai-1", link: "Bai-1-GK-Vat-Ly.html" },
+ { name: "GK1-Bai-2", link: "Bai-2-GK-Vat-Ly.html" },
+ { name: "GK1-Bai-3", link: "Bai-3-GK-Vat-Ly.html" }
  ]
  },
 
@@ -247,10 +247,11 @@ const subjects = {
  ]
  },
 
-    "Biology": { 
-        title: "Sinh học 12 Quiz", 
+
+ "KTPL": { 
+        title: "KTPL Quiz", 
         quizzes: [
-            { name: "Bai 1,3, 4 dot bien gene", link: "bio.html" },
+            { name: "GK", link: "GK-KTPL.html" },
                  { name: "In Development ", link: "#" }, // Renamed for clarity
                    { name: "In Development", link: "#" }
         ]
