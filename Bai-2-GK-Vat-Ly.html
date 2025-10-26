@@ -159,8 +159,20 @@ body.second-chance {
 }
 
 /* subtle persistent change for correct/wrong in second-chance (still green/red) */
-.wrap.second-chance .opt.correct { box-shadow: 0 6px 18px rgba(30,105,63,0.22) }
-.wrap.second-chance .opt.wrong { box-shadow: 0 6px 18px rgba(163,39,39,0.22) }
+/* make correct/wrong visibly green/red in second-chance mode */
+.wrap.second-chance .opt.correct {
+  background: var(--ok) !important;
+  color: #fff !important;
+  border-color: rgba(30,105,63,0.18);
+  box-shadow: 0 6px 18px rgba(30,105,63,0.22);
+}
+
+.wrap.second-chance .opt.wrong {
+  background: var(--bad) !important;
+  color: #fff !important;
+  border-color: rgba(163,39,39,0.18);
+  box-shadow: 0 6px 18px rgba(163,39,39,0.22);
+}
 
 /* intro animation (short + smooth) */
 .wrap.second-chance.intro {
@@ -273,6 +285,11 @@ body.second-chance {
 /* helper to fade overlay out */
 @keyframes cine-fadeout { from{ opacity:1 } to{ opacity:0 } }
 
+
+.textResult.badge { margin-left: 8px; padding: 6px 8px; border-radius: 8px; font-weight: 800; }
+.textResult.correct { background: #1e693f; color: #fff; }
+.textResult.wrong   { background: #a32727; color: #fff; }
+/* ...existing styles... */
 </style>
 </head>
 <body>
@@ -346,10 +363,8 @@ const TOTAL_Q = 19;
 const PER_ROUND = 10;
 
 const POOL = [
-
-
-
 // BÀI 2 - P = I
+/*
 { number: 39, subject: 'C1-B2-PI', type: 'mcq', correct: 'D' },    { number: 51, subject: 'C13-B2-PI', type: 'mcq', correct: 'A' },
 { number: 40, subject: 'C2-B2-PI', type: 'mcq', correct: 'B' },    { number: 52, subject: 'C14-B2-PI', type: 'mcq', correct: 'A' },
 { number: 41, subject: 'C3-B2-PI', type: 'mcq', correct: 'B' },    { number: 53, subject: 'C15-B2-PI', type: 'mcq', correct: 'B' },
@@ -367,15 +382,13 @@ const POOL = [
 { number: 63, subject: 'C25-B2-PII', type: 'multi', correct: ['A', 'D', 'B'] },   { number: 66, subject: 'C28-B2-PII', type: 'multi', correct: ['A'] },
 { number: 64, subject: 'C26-B2-PII', type: 'multi', correct: ['D', 'C'] },   { number: 67, subject: 'C29-B2-PII', type: 'multi', correct: ['A', 'D'] },
 { number: 65, subject: 'C27-B2-PII', type: 'multi', correct: ['B'] },   { number: 68, subject: 'C30-B2-PII', type: 'multi', correct: ['A','B', 'C'] },
-
+*/
 // BÀI 2 - P = III
-{ number: 69, subject: 'C31-B2-PIII', type: 'text', correct: '3' },    //{ number: 73, subject: 'C35-B2-PIII', type: 'text', correct: '1' },
-{ number: 70, subject: 'C32-B2-PIII', type: 'text', correct: '288' },    { number: 74, subject: 'C36-B2-PIII', type: 'text', correct: '1' },
+//{ number: 69, subject: 'C31-B2-PIII', type: 'text', correct: '3' },    //{ number: 73, subject: 'C35-B2-PIII', type: 'text', correct: '1' },
+//{ number: 70, subject: 'C32-B2-PIII', type: 'text', correct: '288' },    { number: 74, subject: 'C36-B2-PIII', type: 'text', correct: '1' },
 { number: 71, subject: 'C33-B2-PIII', type: 'text', correct: '1245' },    { number: 75, subject: 'C37-B2-PIII', type: 'text', correct: '17' },
 { number: 72, subject: 'C34-B2-PIII', type: 'text', correct: '1345' },    { number: 76, subject: 'C38-B2-PIII', type: 'text', correct: '0,05' },
 //bo 5
-
-
 ];
 
 // 👇 This goes OUTSIDE the array
@@ -468,6 +481,7 @@ function attachViewer(){
 }
 
 /* ---------------- render batch ---------------- */
+/* ---------- Replace renderBatch() with this version ---------- */
 function renderBatch(){
   finalBoxHolder.innerHTML = '';
   revealed = false;
@@ -488,23 +502,27 @@ function renderBatch(){
   if(batch[0] && batch[0].number){ viewIndex = batch[0].number; updateViewer(); }
 
   batch.forEach(item=>{
+    // make sure we have a stable uid on each item (you already add _uid when building POOL)
+    const uid = item._uid || `${item.subject || 'General'}-${item.number}`;
+
     const card = document.createElement('div');
     card.className = 'qcard';
     card.dataset.num = item.number;
+    card.dataset.uid = uid;
 
     const typeLabel = item.type === 'mcq' ? 'MCQ' : item.type === 'multi' ? `Multi (max ${item.maxSelect})` : 'Text';
-   card.innerHTML = `<div class="qhead"><div>Q${item.number}${item.subject ? ' - ' + item.subject : ''}</div><div class="small">${typeLabel}</div></div>`;
-
+    card.innerHTML = `<div class="qhead"><div>Q${item.number}${item.subject ? ' - ' + item.subject : ''}</div><div class="small">${typeLabel}</div></div>`;
 
     if(item.type === 'text'){
       const input = document.createElement('input');
       input.className = 'inputText';
       input.placeholder = 'Type answer...';
+      // store selections by uid (not by number)
       input.addEventListener('input', ()=> {
         if(revealed) return;
         const val = input.value.trim();
-        if(val.length>0) selections[item.number] = val;
-        else delete selections[item.number];
+        if(val.length>0) selections[uid] = val;
+        else delete selections[uid];
         updateSelectionState();
       });
       card.appendChild(input);
@@ -521,22 +539,22 @@ function renderBatch(){
           if(item.type === 'mcq'){
             Array.from(opts.children).forEach(ch=> ch.classList.remove('selected'));
             b.classList.add('selected');
-            selections[item.number] = opt;
+            selections[uid] = opt;           // <- keyed by uid
             play(sClick);
           } else if(item.type === 'multi'){
             const already = b.classList.contains('selected');
             if(!already){
-              const cur = (selections[item.number] || []);
+              const cur = (selections[uid] || []);
               if(cur.length >= (item.maxSelect||3)) {
                 b.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:220});
                 return;
               }
               b.classList.add('selected');
-              selections[item.number] = [...(selections[item.number] || []), opt];
+              selections[uid] = [...(selections[uid] || []), opt];
             } else {
               b.classList.remove('selected');
-              selections[item.number] = (selections[item.number] || []).filter(x=>x!==opt);
-              if(selections[item.number].length===0) delete selections[item.number];
+              selections[uid] = (selections[uid] || []).filter(x=>x!==opt);
+              if(selections[uid].length===0) delete selections[uid];
             }
             play(sClick);
           }
@@ -556,6 +574,7 @@ function renderBatch(){
   confirmBtn.disabled = true;
 }
 
+
 /* ---------------- update state ---------------- */
 function updateSelectionState(){
   const answered = Object.keys(selections).length;
@@ -565,7 +584,9 @@ function updateSelectionState(){
 }
 
 /* ---------------- confirm/reveal logic ---------------- */
+/* ---------- Replace the confirm/reveal handler with this version ---------- */
 confirmBtn.addEventListener('click', ()=>{
+  // count selections against current batch length
   if(Object.keys(selections).length < batches[currentBatchIndex].length) return alert('Answer all slots before confirming.');
   revealed = true;
   let roundScore = 0;
@@ -575,28 +596,48 @@ confirmBtn.addEventListener('click', ()=>{
   const batchWrong = [];
 
   batch.forEach(item=>{
-    const qnum = item.number;
-    const card = answersEl.querySelector(`.qcard[data-num="${qnum}"]`);
+    const uid = item._uid || `${item.subject || 'General'}-${item.number}`;
+    const card = answersEl.querySelector(`.qcard[data-uid="${uid}"]`);
     if(!card) return;
 
-    // TEXT
+    // ---- TEXT ----
     if(item.type === 'text'){
       const input = card.querySelector('.inputText');
-      const answer = (selections[qnum]||'').toString().trim().toLowerCase();
+      const answer = (selections[uid]||'').toString().trim().toLowerCase();
       const correct = (item.correct||'').toString().trim();
+      const correctLower = correct.toLowerCase();
       input.disabled = true;
-      if(answer === correct.toLowerCase()){
+
+      // remove any prior result node
+      card.querySelectorAll('.textResult').forEach(n=>n.remove());
+
+      if(answer === correctLower){
+        // correct
         input.style.borderColor = '#1e693f';
         input.style.boxShadow = '0 6px 18px rgba(30,105,63,0.12)';
         roundScore++;
         play(sCorrect);
+
+        // add a small 'Correct' badge next to the input for instant clarity
+        const okBadge = document.createElement('span');
+        okBadge.className = 'textResult badge correct';
+        okBadge.textContent = 'Correct';
+        input.insertAdjacentElement('afterend', okBadge);
+
       } else {
+        // wrong: style input, play sound, add to wrong pool
         input.style.borderColor = '#a32727';
         input.style.boxShadow = '0 6px 18px rgba(163,39,39,0.12)';
         play(sWrong);
         batchWrong.push(item);
 
-        // reveal correct answer under input (same UI as you had)
+        // add a 'Wrong' badge
+        const wrongBadge = document.createElement('span');
+        wrongBadge.className = 'textResult badge wrong';
+        wrongBadge.textContent = 'Wrong';
+        input.insertAdjacentElement('afterend', wrongBadge);
+
+        // reveal correct answer under the input (keeps your existing UX)
         const reveal = document.createElement('div');
         reveal.className = 'note';
         reveal.style.marginTop = '8px';
@@ -610,9 +651,9 @@ confirmBtn.addEventListener('click', ()=>{
         card.appendChild(reveal);
       }
 
-    // MCQ
+    // ---- MCQ ----
     } else if(item.type === 'mcq'){
-      const chosen = selections[qnum];
+      const chosen = selections[uid];
       const opts = card.querySelectorAll('.opt');
       opts.forEach(optEl=>{
         const v = optEl.textContent;
@@ -628,9 +669,9 @@ confirmBtn.addEventListener('click', ()=>{
         batchWrong.push(item);
       }
 
-    // MULTI
+    // ---- MULTI ----
     } else if(item.type === 'multi'){
-      const chosen = selections[qnum] ? [...selections[qnum]] : [];
+      const chosen = selections[uid] ? [...selections[uid]] : [];
       const correctSet = (item.correct||[]).slice().sort();
       const chosenSet = chosen.slice().sort();
       const opts = card.querySelectorAll('.opt');
@@ -656,8 +697,6 @@ confirmBtn.addEventListener('click', ()=>{
   // If main run (not second chance) collect wrongs for second-chance pool
   if(!secondChanceMode && batchWrong.length>0){
     mainWrongPool.push(...batchWrong);
-    // debug helper (remove later if you want)
-    // console.log('batchWrong pushed to mainWrongPool:', batchWrong, 'mainWrongPool now:', mainWrongPool);
   }
 
   accScore += roundScore;
