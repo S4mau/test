@@ -1,448 +1,702 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Lively Quiz – Normal Mode+</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Literature Quiz — Single Question / Reveal / Second Chance</title>
 <style>
-  :root{ --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.15); --speed:300ms; }
-  *{box-sizing:border-box}
-  body{ margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
-    font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    background: linear-gradient(135deg, #8EC5FC 0%, #E0C3FC 100%);}
-  .wrap{ width:min(820px,94vw); background:#453C3C	; border-radius:24px; box-shadow:var(--shadow); padding:28px; }
-
-  .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
-  .badge{ background:#eef3ff; color:#2a4bd6; font-weight:700; padding:8px 12px; border-radius:999px; font-size:14px; }
-  #scoreBadge{ background:#eafaf0; color:#1f7a3a; }
-
-  .timerRow{ display:flex; align-items:center; gap:10px; margin:8px 0 20px }
-  #timerText{ font-weight:700 }
-  .bar{ flex:1; height:10px; background:#eee; border-radius:999px; overflow:hidden; box-shadow: inset 0 0 0 1px rgba(0,0,0,.04); }
-  .fill{ height:100%; width:100%; background:#ffb703; transition:width linear; }
-
-  .card{ background:#FFF0C4; padding:24px; border-radius:var(--radius); text-align:center; font-weight:800; font-size:22px; min-height:92px;
-    display:flex; align-items:center; justify-content:center; box-shadow: inset 0 0 0 1px rgba(0,0,0,.05); }
-  .fade-in{ animation:fadeIn .28s ease both } .fade-out{ animation:fadeOut .22s ease both }
-  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
-  @keyframes fadeOut{ from{opacity:1} to{opacity:0; transform:translateY(-6px)} }
-
-  .answers{ margin-top:16px; display:grid; grid-template-columns:1fr; gap:12px }
-  @media (min-width:640px){ .answers{ grid-template-columns:1fr 1fr } }
-  .btn{ border:none; border-radius:14px; padding:16px; font-size:18px; font-weight:700; color:#fff; cursor:pointer; transition:transform var(--speed), filter var(--speed), box-shadow var(--speed); box-shadow:0 6px 18px rgba(0,0,0,.08); }
-  .btn:hover{ transform:translateY(-2px) scale(1.02); filter:brightness(1.07) }
-  .btn:disabled{ opacity:.85; cursor:default; transform:none; filter:none }
-
-  .correct{ background:#18fdb8 !important; color:#fff !important; }
-  .wrong{ background:#e65c39
- !important; color:#fff !important; animation:shake .22s linear 2 }
-  @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-  .flash{ animation:flash 480ms ease both }
-  @keyframes flash{ 0%{ box-shadow:0 0 0 0 rgba(40,167,69,.6) } 100%{ box-shadow:0 0 0 16px rgba(40,167,69,0) } }
-
-  #board{ display:none; text-align:center; margin-top:10px;  color: white; }
-  #board h2{ margin:8px 0 14px }
-  .line{ opacity:0; transform:translateY(8px); transition:opacity .7s, transform .7s; font-size:18px; }
-  .reveal{ opacity:1; transform:none }
-  .actions{ margin-top:16px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap }
-  .ghost{ background:#2A1E29; color:#fff; border:none; border-radius:12px; padding:10px 16px; font-weight:800; cursor:pointer; transition:transform var(--speed), filter var(--speed); box-shadow:var(--shadow) }
-  .ghost:hover{ transform:translateY(-1px) }
-
- .c1 { background: #b84f3e; } /* Muted Red-Orange from the ground/lava */
-.c2 { background: #4e7a8e; } /* Desaturated Blue from the sky */
-.c3 { background: #9c8a40; } /* Earthy Yellow-Green from the ground patterns */
-.c4 { background: #5f3e5e; } /* Deep Muted Purple from the shadows */
-
-  /* small stats row */
-  .stats{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
-  .stat{ background:#f3f6ff; padding:8px 12px; border-radius:10px; font-weight:700; color:#213; }
-  body {
-  background-image: url('assets/Class.webp');
-  background-size: cover;       /* fills the screen */
-  background-position: center;  /* centers it */
-  background-repeat: no-repeat; /* no tiling */
+:root{
+  --bg:#071021; --card:#0f1724; --muted:#c8d0df; --accent:#ffb703;
+  --ok:#1e693f; --bad:#a32727;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; font-family:Inter,system-ui,Arial;
+  background:linear-gradient(180deg,#071021 0%,#1a1730 100%);
+  color:var(--muted);
+  display:flex; align-items:center; justify-content:center; padding:18px;
+  transition: background .7s ease, color .45s ease;
+}
+.wrap{
+  width:min(1100px,96vw);
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));
+  border-radius:12px; padding:18px;
+  box-shadow:0 12px 40px rgba(2,6,23,0.6);
+  border:1px solid rgba(255,255,255,0.03);
 }
 
+/* header */
+.header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px }
+.header h1{ font-size:1.05rem; margin:0; color:#fff }
+.header .stats{ display:flex; gap:10px; align-items:center }
+.stat{ background:rgba(255,255,255,0.03); padding:6px 10px; border-radius:8px; font-weight:800; color:#fff }
 
+/* answers - single big card */
+.answers{ display:block; }
+.qcard{
+  background:var(--card);
+  padding:22px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.04);
+  margin-bottom:12px;
+  min-height:220px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.qhead{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; color:#eaf2ff; font-weight:800; }
+.qnum{ font-size:1.05rem; }
+.qtext{ font-size:1.12rem; line-height:1.4; color:#f7fbff; margin-top:8px; }
 
-header {
-  position: fixed;
-  top: 0; left: 0;
+/* larger options */
+.opts{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+.opt{ padding:12px 14px; border-radius:10px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); cursor:pointer; text-align:left; font-weight:700; color:var(--muted); transition: transform .12s, box-shadow .2s; }
+.opt:hover{ transform: translateY(-3px) }
+.opt.selected{ outline:3px solid rgba(255,183,3,0.12); background:rgba(255,183,3,0.09); color:#fff }
+.opt.correct{ background:var(--ok); color:#fff; box-shadow:0 8px 26px rgba(30,105,63,0.14) }
+.opt.wrong{ background:var(--bad); color:#fff; box-shadow:0 8px 26px rgba(163,39,39,0.14) }
+
+/* text input */
+/* bigger, multiline input (textarea) */
+.inputText {
   width: 100%;
-  background: linear-gradient(90deg, #ff5f6d, #ffc371);
-  color: white;
-  padding: 15px 25px;
-  display: flex;
-  justify-content: space-between; /* title left, right container right */
-  align-items: center;
-  font-size: 1.8em;
-  font-weight: bold;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  z-index: 9999;
+  min-height: 120px;      /* initial height */
+  max-height: 44vh;       /* prevents it from growing too large on tall screens */
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.45;
+  resize: vertical;       /* user can drag to make it taller */
+  overflow: auto;         /* show scrollbar when needed */
+  box-shadow: none;
+  transition: box-shadow .18s, border-color .18s;
 }
 
-.header-title {
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-}
-
-/* container for Menu + Fumo */
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 50px; /* space between Menu and Fumo */
-}
-
-/* Menu styling */
-.menu-link {
-  color: white;
-  text-decoration: none;
-  font-size: 0.9em;
-  background: rgba(255,255,255,0.1);
-  padding: 6px 12px;
-  border-radius: 12px;
-  transition: background 0.25s, transform 0.25s;
-}
-
-.menu-link:hover {
-  background: rgba(255,255,255,0.25);
-  transform: scale(1.05);
-}
-
-/* Fumo icon styling */
-#fumoIcon {
-    width: 48px;  /* bigger */
-  height: 48px; /* bigger */
-  cursor: pointer;
-  transition: transform 0.15s;
-}
-
-/* squish effect on click */
-#fumoIcon:active {
-  transform: scaleX(1.3) scaleY(0.7);
-}
-
-/* push page content below header */
-body {
-  margin-top: 70px;
+/* slightly bigger focus state so it's obvious */
+.inputText:focus {
+  outline: none;
+  box-shadow: 0 6px 18px rgba(255,183,3,0.06);
+  border-color: rgba(255,183,3,0.12);
 }
 
 
-header {
-  /* existing styles… */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25); /* current shadow */
-}
+/* reveal badge for text */
+.textResult.badge { margin-left: 8px; padding: 8px 10px; border-radius: 8px; font-weight: 800; font-size:0.95rem; }
+.textResult.correct { background: #1e693f; color: #fff; }
+.textResult.wrong   { background: #a32727; color: #fff; }
 
-header {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: var(--header-height); /* Explicit height */
-    background: linear-gradient(90deg, #ff5f6d, #ffc371);
-    color: white;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1.8em;
-    font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
-    z-index: 9999;
+/* controls */
+.controls{ display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:8px }
+.btnPrimary{ background:linear-gradient(90deg,#ffb703,#ff9800); color:#111; font-weight:900; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; }
+.btnGhost{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:10px; cursor:pointer }
+.btnSmall{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04); padding:6px 8px; border-radius:8px; cursor:pointer }
+
+/* final box */
+.finalBox{ text-align:center; padding:12px; border-radius:8px; margin-top:12px; background:rgba(255,255,255,0.02) }
+
+/* second chance visuals persist */
+body.second-chance { background: linear-gradient(120deg,#0a0710 0%, #120417 35%, #0c0310 100%); color:#f6eefc; }
+.wrap.second-chance { background: linear-gradient(180deg, rgba(14,6,18,0.92), rgba(8,3,12,0.92)); border-color: rgba(191,70,172,0.06); }
+
+/* cinematic overlay */
+#cinematic-overlay{ position: fixed; inset: 0; z-index: 99999; pointer-events:none; display:flex; align-items:center; justify-content:center; }
+.cine-bar { position:absolute; left: 0; right:0; height:12vh; background: rgba(6,4,6,0.94); transform: translateY(-120%); }
+.cine-bar.bottom { bottom:0; transform: translateY(120%); }
+.cine-title { font-weight:900; color:#fef6ff; font-size: clamp(28px, 6vw, 48px); text-shadow:0 10px 30px rgba(0,0,0,0.6); transform: translateY(30px); opacity:0; }
+
+/* accessibility */
+.opt:focus { outline: 2px dashed rgba(255,255,255,0.06); outline-offset: 4px; }
+
+@media (max-width:880px){
+  .qcard{ padding:16px; min-height:200px; }
 }
 </style>
-
-
-
-<header>
-  <div class="header-title"></div>
-  
-  <div class="header-right">
-    <a href="index.html" class="menu-link">Menu</a>
-
-  </div>
-</header>
-
 </head>
 <body>
-  <div class="wrap" id="app">
-    <div class="top">
-      <div class="badge" id="qBadge">Question 1/1</div>
-      <div class="stats">
-        <div class="badge" id="scoreBadge">Score: <span id="score">0</span></div>
-        <div class="stat">Correct: <span id="correctCount">0</span></div>
-        <div class="stat">Wrong: <span id="wrongCount">0</span></div>
-        <div class="stat">Time: <span id="elapsed">00:00</span></div>
-      </div>
-    </div>
 
-    <div class="card fade-in" id="question">Loading…</div>
-
-    <div class="answers" id="answers"></div>
-
-    <div id="board">
-      <h2>🎉 Final Score</h2>
-      <div class="line" id="Lscore">Score: 0</div>
-      <div class="line" id="Lcorrect">Correct: 0</div>
-      <div class="line" id="Lwrong">Wrong: 0</div>
-      <div class="line" id="Ltime">Total time: 00:00</div>
-      <div class="line" id="Lavg">Avg / Q: 00:00</div>
-
-      <div class="actions">
-        <button class="ghost" id="retryShuffle">Retry (reshuffle)</button>
-        <button class="ghost" id="retrySame">Retry (same order)</button>
-      </div>
+<div class="wrap" id="wrap">
+  <div class="header">
+    <h1>Literature Quiz — Single Question (Second Chance)</h1>
+    <div class="stats">
+      <div class="stat">Round: <span id="roundIdx">1</span>/<span id="roundTotal">1</span></div>
+      <div class="stat">Score: <span id="accScore">0</span> / <span id="poolTotal">0</span></div>
     </div>
   </div>
 
-  <!-- audio hooks (point to your folder) -->
-  <audio id="sClick" src="assets/sounds/sfx_click.ogg" preload="auto"></audio>
-  <audio id="sCorrect" src="assets/sounds/Correct-1.ogg" preload="auto"></audio>
-  <audio id="sWrong" src="assets/sounds/Incorrect-1.ogg" preload="auto"></audio>
+  <section>
+    <div class="answers" id="answers"></div>
+
+    <div class="controls">
+      <div class="small">Answered: <span id="selectedCount">0</span> / <span id="perRound">1</span></div>
+      <div style="display:flex; gap:8px;">
+        <button class="btnGhost" id="retrySame">Retry</button>
+        <button class="btnGhost" id="reshuffleAll">Reshuffle</button>
+        <button class="btnGhost" id="revealBtn" style="display:none">Reveal Answer</button>
+        <button class="btnPrimary" id="confirmBtn" disabled>Confirm</button>
+        <button class="btnPrimary" id="nextBtnRound" style="display:none">Next ▶</button>
+      </div>
+    </div>
+
+    <div id="finalBoxHolder"></div>
+  </section>
+</div>
+
+<!-- sounds (optional) -->
+<audio id="sClick" src="assets/sounds/sfx_click.ogg" preload="auto"></audio>
+<audio id="sCorrect" src="assets/sounds/Correct-1.ogg" preload="auto"></audio>
+<audio id="sWrong" src="assets/sounds/Incorrect-1.ogg" preload="auto"></audio>
 
 <script>
-/* ---------------- DATA ---------------- */
-const QUESTIONS = [
-   // Phương thức biểu đạt
-  { q: "Văn bản kể lại chuỗi sự kiện, nhân vật có tình huống rõ ràng. Phương thức biểu đạt chủ yếu là:", opts:["Miêu tả","Tự sự","Biểu cảm","Thuyết minh"], correct:"Tự sự" },
-  { q: "Đoạn văn bày tỏ cảm xúc, tâm trạng của tác giả. Phương thức biểu đạt chính là:", opts:["Nghị luận","Thuyết minh","Biểu cảm","Tự sự"], correct:"Biểu cảm" },
-  { q: "Văn bản cung cấp kiến thức về hiện tượng thiên nhiên, giải thích nguyên nhân, cách thức. Phương thức biểu đạt:", opts:["Tự sự","Thuyết minh","Biểu cảm","Miêu tả"], correct:"Thuyết minh" },
-  { q: "Đoạn văn trình bày quan điểm, phân tích vấn đề xã hội, nhằm thuyết phục người đọc. Phương thức biểu đạt:", opts:["Nghị luận","Miêu tả","Tự sự","Biểu cảm"], correct:"Nghị luận" },
-  { q: "Đoạn văn miêu tả cảnh sông núi với chi tiết sinh động, hình ảnh trực quan. Phương thức biểu đạt:", opts:["Tự sự","Biểu cảm","Miêu tả","Thuyết minh"], correct:"Miêu tả" },
-  { q: "Văn bản kể chuyện kết hợp miêu tả chi tiết nhân vật và cảnh vật, phương thức chủ đạo là:", opts:["Biểu cảm","Tự sự","Miêu tả","Thuyết minh"], correct:"Tự sự" },
-  { q: "Đoạn văn thể hiện thái độ, cảm xúc của tác giả trước sự việc. Phương thức biểu đạt là:", opts:["Biểu cảm","Thuyết minh","Nghị luận","Tự sự"], correct:"Biểu cảm" },
-  { q: "Văn bản giải thích về tác dụng của ánh sáng mặt trời đối với cây cối. Phương thức biểu đạt:", opts:["Tự sự","Thuyết minh","Biểu cảm","Miêu tả"], correct:"Thuyết minh" },
-  { q: "Văn bản phân tích, đưa lập luận để thuyết phục độc giả về một quan điểm xã hội. Phương thức biểu đạt:", opts:["Biểu cảm","Miêu tả","Nghị luận","Tự sự"], correct:"Nghị luận" },
+/* CONFIG */
+const PER_ROUND = 1;      // one question per round
+const TOTAL_Q = 3;       // update to your total count
 
-  // Biện pháp tu từ
-  { q: "“Dòng sông lấp lánh như thủy tinh” → biện pháp:", opts:["Ẩn dụ","Nhân hóa","So sánh","Hoán dụ"], correct:"So sánh" },
-  { q: "“Gió hát, lá reo, trời mây cũng cười” → biện pháp:", opts:["Nhân hóa","Nói quá","Điệp ngữ","Chơi chữ"], correct:"Nhân hóa" },
-  { q: "“Vừa chạy vừa hét, vừa khóc vừa cười” → biện pháp:", opts:["Liệt kê","Nói giảm nói tránh","Câu hỏi tu từ","Đảo ngữ"], correct:"Liệt kê" },
-  { q: "“Áo dài thướt tha, tóc mây bay bay, nụ cười như hoa” → biện pháp:", opts:["So sánh","Liệt kê","Nói quá","Chơi chữ"], correct:"Liệt kê" },
-  { q: "“Thời gian trôi nhanh, chẳng chờ ai cả” → biện pháp:", opts:["Nhân hóa","Đảo ngữ","Hoán dụ","Câu hỏi tu từ"], correct:"Nhân hóa" },
-  { q: "“Anh có thể làm gì khác ngoài việc mỉm cười?” → biện pháp:", opts:["Câu hỏi tu từ","Liệt kê","Nói giảm nói tránh","Đảo ngữ"], correct:"Câu hỏi tu từ" },
-  { q: "“Trái tim rực cháy, đôi mắt lấp lánh, giọng nói ấm áp” → biện pháp:", opts:["Liệt kê","Nhân hóa","Nói quá","Chơi chữ"], correct:"Liệt kê" },
-  { q: "“Không phải cái đẹp, mà là cái diễm lệ” → biện pháp:", opts:["Phép đối","Nhân hóa","Điệp ngữ","Hoán dụ"], correct:"Phép đối" },
-  { q: "“Mây trời trôi, mây trời lại bay” → biện pháp:", opts:["Điệp cấu trúc câu","Liệt kê","Đảo ngữ","Câu hỏi tu từ"], correct:"Điệp cấu trúc câu" },
-  { q: "“Ta đây là ai, sao lại lạc vào đây?” → biện pháp:", opts:["Câu hỏi tu từ","Nhân hóa","Liệt kê","Phép đối"], correct:"Câu hỏi tu từ" },
+/* POOL format:
+  - number: unique question id
+  - type: 'mcq' or 'text'
+  - question: the text prompt
+  - choices: array of strings (for mcq) in A,B,C,D order
+  - correct: for mcq -> 'A'|'B'|'C'|'D'; for text -> correct text string
+*/
+const POOL = [
+  //{ number: 15, type: 'mcq', question: 'Which poet wrote "The Waste Land  Which poet wrote "The Waste Land Which poet wrote "The Waste Land"?', choices:['T.S. Eliot','W.B. Yeats','Ezra Pound','Walt Whitman'], correct: 'A' },
 
-  // Thể thơ
-  { q: "8 câu, mỗi câu 7 chữ, tuân luật bằng trắc, vần theo quy tắc → thể thơ:", opts:["Lục bát","Thất ngôn bát cú","Thất ngôn tứ tuyệt","Song thất lục bát"], correct:"Thất ngôn bát cú" },
-  { q: "4 câu, mỗi câu 7 chữ, vần câu 1,2,4 → thể:", opts:["Thất ngôn tứ tuyệt","Thất ngôn bát cú","Lục bát","Thơ năm chữ"], correct:"Thất ngôn tứ tuyệt" },
-  { q: "2 câu thất + 1 câu lục + 1 câu bát → thể:", opts:["Thất ngôn bát cú","Lục bát","Song thất lục bát","Thơ bốn chữ"], correct:"Song thất lục bát" },
-  { q: "Mỗi câu 6 chữ, ngắt nhịp 2/2/2 → thể:", opts:["Thơ sáu chữ","Thơ năm chữ","Lục bát","Thất ngôn tứ tuyệt"], correct:"Thơ sáu chữ" },
-  { q: "Bài thơ 5 chữ, vần linh hoạt, gần gũi → thể:", opts:["Thơ bốn chữ","Thơ năm chữ","Thơ sáu chữ","Lục bát"], correct:"Thơ năm chữ" },
-  { q: "4 chữ, nhịp ngắn, thường dùng dân ca → thể:", opts:["Thơ bốn chữ","Thơ năm chữ","Thơ sáu chữ","Lục bát"], correct:"Thơ bốn chữ" },
-  { q: "Thể thơ đặc trưng Việt Nam, câu 6 nối câu 8 → thể:", opts:["Lục bát","Thất ngôn bát cú","Song thất lục bát","Thất ngôn tứ tuyệt"], correct:"Lục bát" },
-  { q: "Thơ Đường luật, 8 câu, 7 chữ mỗi câu, luật bằng trắc chặt chẽ → thể:", opts:["Thất ngôn bát cú","Lục bát","Song thất lục bát","Thất ngôn tứ tuyệt"], correct:"Thất ngôn bát cú" },
+  //Ptbd
+ { number: 1, type: 'text', question: 'Tự sự Ptbd', correct: 'Kể chuyện, trình bày sự việc theo trình tự.' },
+  { number: 2, type: 'text', question: 'Miêu tả Ptbd', correct: 'Tái hiện hình ảnh, cảnh vật, con người bằng ngôn ngữ.' },
+  { number: 3, type: 'text', question: 'Biểu cảm Ptbd', correct: 'Bộc lộ cảm xúc, tâm trạng, tình cảm.' },
+  { number: 4, type: 'text', question: 'Nghị luận Ptbd', correct: 'Nêu ý kiến, lập luận, thuyết phục người đọc.' },
+ 
 
-  // Ngôi kể
-  { q: "Câu chuyện kể từ “tôi”, nhân vật chính là người kể → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi khách quan"], correct:"Ngôi thứ nhất" },
-  { q: "“Anh ấy” kể, người kể đứng ngoài → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi trực tiếp"], correct:"Ngôi thứ ba" },
-  { q: "Người kể trực tiếp đối thoại với người đọc → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi khách quan"], correct:"Ngôi thứ hai" },
-  { q: "Câu chuyện kể từ người ngoài, quan sát tất cả nhân vật → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi trực tiếp"], correct:"Ngôi thứ ba" },
-  { q: "Nhân vật kể về chính mình → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi khách quan"], correct:"Ngôi thứ nhất" },
-  { q: "Người kể trực tiếp nhắc đến “bạn”, “các bạn” → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi trực tiếp"], correct:"Ngôi thứ hai" },
-  { q: "Tác giả kể từ góc nhìn toàn tri → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi trực tiếp"], correct:"Ngôi thứ ba" },
-  { q: "Người kể không tham gia câu chuyện, quan sát khách quan → ngôi kể:", opts:["Ngôi thứ nhất","Ngôi thứ hai","Ngôi thứ ba","Ngôi khách quan"], correct:"Ngôi thứ ba" }
+  //bptt
+  { number: 6, type: 'text', question: 'So sánh bptt', correct: 'So sánh hai sự vật, hiện tượng để làm nổi bật đặc điểm.' },
+  { number: 7, type: 'text', question: 'Ẩn dụ bptt', correct: 'Gọi tên một sự vật, hiện tượng bằng một sự vật, hiện tượng khác để gợi ý nghĩa sâu hơn.' },
+  { number: 8, type: 'text', question: 'Hoán dụ bptt', correct: 'Lấy một sự vật, hiện tượng liên quan để thay cho sự vật, hiện tượng cần nói.' },
+  { number: 9, type: 'text', question: 'Nhân hóa bptt', correct: 'Gán đặc điểm, hành động của con người cho vật, hiện tượng, sự vật.' },
+  { number: 10, type: 'text', question: 'Nói quá bptt', correct: 'Phóng đại sự vật, hiện tượng vượt quá thực tế để nhấn mạnh.' },
+  { number: 11, type: 'text', question: 'Nói giảm, nói tránh bptt', correct: 'Dùng cách nói nhẹ, tránh trực tiếp để làm dịu, giảm mức độ.' },
+  { number: 12, type: 'text', question: 'Liệt kê bptt', correct: 'Xếp nhiều sự vật, hiện tượng, ý tưởng nối tiếp nhau để nhấn mạnh hoặc làm rõ nội dung.' },
+  { number: 13, type: 'text', question: 'Câu hỏi tu từ bptt', correct: 'Đặt câu hỏi mà không cần người nghe trả lời, nhằm nhấn mạnh hoặc gợi suy nghĩ.' },
+  { number: 14, type: 'text', question: 'Đối lập / Tương phản bptt', correct: 'Đặt hai sự vật, hiện tượng trái ngược nhau để làm nổi bật đặc điểm hoặc ý nghĩa.' },
+
+  //The tho
+   { number: 15, type: 'text', question: 'Thơ lục bát', correct: 'Gồm 6 và 8 chữ' },
+  { number: 16, type: 'text', question: 'Thơ song thất lục bát', correct: 'Gồm 7-7-6-8 chữ' },
+  { number: 17, type: 'text', question: 'Thơ ngũ ngôn', correct: 'Mỗi câu 5 chữ' },
+  { number: 18, type: 'text', question: 'Thơ thất ngôn', correct: 'Mỗi câu 7 chữ.' },
+  { number: 19, type: 'text', question: 'Thất ngôn bát cú Đường luật', correct: '8 câu, 7 chữ' },
+  { number: 20, type: 'text', question: 'Thất ngôn tứ tuyệt', correct: '4 câu, 7 chữ, ngắn gọn và cô đọng.' },
+  { number: 21, type: 'text', question: 'Thơ tự do', correct: 'Không cố định số chữ, câu, vần; linh hoạt, hiện đại.' }
+
 ];
 
-/* ---------------- STATE ---------------- */
-let order = [];
-let qi = 0;
-let score = 0;
-let correctCount = 0;
-let wrongCount = 0;
-let startTime = null;
-let questionStart = null;
-let elapsedInterval = null;
-let lastOrderSaved = []; // for "same order" retry
+/* stable uid */
+POOL.forEach(q => q._uid = `${q.number}`);
 
-/* ---------------- DOM ---------------- */
-const qBadge = document.getElementById('qBadge');
-const scoreBadge = document.getElementById('score');
-const correctBadge = document.getElementById('correctCount');
-const wrongBadge = document.getElementById('wrongCount');
-const questionEl = document.getElementById('question');
+/* state */
+let shuffled = [];
+let batches = [];
+let currentBatchIndex = 0;
+let selections = {}; // keyed by uid
+let revealed = false;
+let accScore = 0;
+let viewIndex = 1; // not used (kept for compatibility)
+
+/* second chance */
+let secondChanceMode = false;
+let mainWrongPool = [];
+let secondChancePool = [];
+
+/* DOM */
 const answersEl = document.getElementById('answers');
-const elapsedEl = document.getElementById('elapsed');
-const board = document.getElementById('board');
-const Lscore = document.getElementById('Lscore');
-const Lcorrect = document.getElementById('Lcorrect');
-const Lwrong = document.getElementById('Lwrong');
-const Ltime = document.getElementById('Ltime');
-const Lavg = document.getElementById('Lavg');
-const retryShuffle = document.getElementById('retryShuffle');
-const retrySame = document.getElementById('retrySame');
+const selectedCountEl = document.getElementById('selectedCount');
+const confirmBtn = document.getElementById('confirmBtn');
+const nextBtnRound = document.getElementById('nextBtnRound');
+const retrySameBtn = document.getElementById('retrySame');
+const reshuffleAllBtn = document.getElementById('reshuffleAll');
+const roundIdxEl = document.getElementById('roundIdx');
+const roundTotalEl = document.getElementById('roundTotal');
+const accScoreEl = document.getElementById('accScore');
+const poolTotalEl = document.getElementById('poolTotal');
+const perRoundEl = document.getElementById('perRound');
+const finalBoxHolder = document.getElementById('finalBoxHolder');
+const wrapEl = document.getElementById('wrap');
+const revealBtn = document.getElementById('revealBtn');
 
 const sClick = document.getElementById('sClick');
 const sCorrect = document.getElementById('sCorrect');
 const sWrong = document.getElementById('sWrong');
 
-/* ---------------- UTIL ---------------- */
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
-  }
-  return arr;
-}
-function formatTime(ms){
-  const s = Math.floor(ms/1000);
-  const mm = String(Math.floor(s/60)).padStart(2,'0');
-  const ss = String(s%60).padStart(2,'0');
-  return `${mm}:${ss}`;
-}
+function play(el){ try{ el && el.currentTime===0 && el.play(); if(el && el.currentTime !== 0){ el.currentTime=0; el.play(); } }catch(e){} }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
 
-/* ---------------- QUIZ FLOW ---------------- */
-function start(reshuffle=true, preserveOrder=false){
-  // reset stats
-  score = 0; correctCount = 0; wrongCount = 0;
-  qi = 0;
-
-  // create order
-  order = Array.from({length: QUESTIONS.length}, (_,i)=>i);
-  if(reshuffle) shuffle(order);
-  if(preserveOrder && lastOrderSaved.length===order.length) order = [...lastOrderSaved];
-  lastOrderSaved = [...order];
-
-  // timer
-  startTime = Date.now();
-  questionStart = Date.now();
-  if(elapsedInterval) clearInterval(elapsedInterval);
-  elapsedInterval = setInterval(()=> {
-    elapsedEl.textContent = formatTime(Date.now()-startTime);
-  }, 250);
-
-  // UI
-  board.style.display = 'none';
-  questionEl.style.display = 'flex';
-  answersEl.style.display = 'grid';
-  updateBadges();
-  renderQuestion();
+/* prepare batches */
+function prepareFromPool(poolArr, reshuffle=true){
+  poolTotalEl.textContent = POOL.length;
+  shuffled = [...poolArr];
+  if(reshuffle) shuffle(shuffled);
+  batches = [];
+  for(let i=0;i<shuffled.length;i+=PER_ROUND) batches.push(shuffled.slice(i, i+PER_ROUND));
+  roundTotalEl.textContent = batches.length || 1;
+  currentBatchIndex = 0;
 }
 
-function renderQuestion(){
-  if(qi >= order.length){ return finish(); }
-
-  // animate swap
-  questionEl.classList.remove('fade-in'); questionEl.classList.add('fade-out');
-  setTimeout(()=>{
-    const q = QUESTIONS[order[qi]];
-    questionEl.textContent = q.q;
-    questionEl.classList.remove('fade-out'); questionEl.classList.add('fade-in');
-
-    qBadge.textContent = `Question ${qi+1}/${order.length}`;
-
-    answersEl.innerHTML = '';
-    const opts = shuffle([...q.opts]); // randomize answer order
-    const colorClasses = shuffle(['c1','c2','c3','c4']);
-    opts.forEach((opt, idx)=>{
-      const btn = document.createElement('button');
-      btn.className = `btn ${colorClasses[idx]}`;
-      btn.textContent = opt;
-      btn.dataset.correct = (opt === q.correct) ? '1':'0';
-      // play click sound on mousedown for snappy feel, but still evaluate on click
-      btn.addEventListener('mousedown', ()=> { try { sClick.currentTime=0; sClick.play(); } catch(e){} });
-      btn.addEventListener('click', ()=> choose(btn));
-      answersEl.appendChild(btn);
-    });
-
-    // mark question start time
-    questionStart = Date.now();
-  }, 180);
+/* initial */
+function prepareMain(){
+  accScore = 0;
+  accScoreEl.textContent = accScore;
+  mainWrongPool = [];
+  secondChanceMode = false;
+  wrapEl.classList.remove('second-chance','intro');
+  document.body.classList.remove('second-chance');
+  prepareFromPool(POOL, true);
 }
 
-function lockAnswers(){
-  document.querySelectorAll('.btn').forEach(b=> b.disabled = true);
-}
+/* render single (or batch of size 1) */
+function renderBatch(){
+  finalBoxHolder.innerHTML = '';
+  revealed = false;
+  selections = {};
+  answersEl.innerHTML = '';
 
-function choose(btn){
-  if(btn.disabled) return;
-  lockAnswers();
-
-  const isCorrect = btn.dataset.correct === '1';
-
-  // compute time per question if needed later
-  const qTime = Date.now() - questionStart;
-
-  if(isCorrect){
-    btn.classList.add('correct','flash');
-    score += 1;
-    correctCount += 1;
-    try { sCorrect.currentTime = 0; sCorrect.play(); } catch(e){}
-    // highlight only chosen correct (no other wrong highlight needed)
-    document.querySelectorAll('.btn').forEach(b => {
-      if(b.dataset.correct === '1') b.classList.add('correct');
-      b.disabled = true;
-    });
-  } else {
-    wrongCount += 1;
-    try { sWrong.currentTime = 0; sWrong.play(); } catch(e){}
-    // mark ALL wrong answers red and the correct one green
-    document.querySelectorAll('.btn').forEach(b=>{
-      if(b.dataset.correct === '1'){
-        b.classList.add('correct');
-      }else{
-        b.classList.add('wrong');
-      }
-      b.disabled = true;
-    });
-    // also add small red effect to the clicked button (it already gets wrong class)
+  if(!batches || batches.length===0){
+    finalBoxHolder.innerHTML = `<div class="finalBox"><h3>No questions in this pool.</h3></div>`;
+    return;
   }
 
-  updateBadges();
-  // next question after a pause so user sees feedback
-  setTimeout(()=> {
-    qi++;
-    renderQuestion();
-  }, 950);
-}
+  const batch = batches[currentBatchIndex];
+  roundIdxEl.textContent = currentBatchIndex + 1;
+  perRoundEl.textContent = batch.length;
 
-function finish(){
-  clearInterval(elapsedInterval);
-  const totalMs = Date.now() - startTime;
-  questionEl.style.display = 'none';
-  answersEl.style.display = 'none';
-  board.style.display = 'block';
+  // display single card(s)
+  batch.forEach(item => {
+    const uid = item._uid || `${item.number}`;
+    const card = document.createElement('div');
+    card.className = 'qcard';
+    card.dataset.uid = uid;
 
-  // fill final stats
-  Lscore.textContent = `Score: ${score} / ${QUESTIONS.length}`;
-  Lcorrect.textContent = `Correct: ${correctCount}`;
-  Lwrong.textContent = `Wrong: ${wrongCount}`;
-  Ltime.textContent = `Total time: ${formatTime(totalMs)}`;
-  const avgMs = totalMs / QUESTIONS.length;
-  Lavg.textContent = `Avg / Q: ${formatTime(Math.round(avgMs))}`;
+    // header + question text
+    const qhead = document.createElement('div');
+    qhead.className = 'qhead';
+    qhead.innerHTML = `<div class="qnum">Q${item.number}</div>`;
+    const qtext = document.createElement('div');
+    qtext.className = 'qtext';
+    qtext.textContent = item.question || `Question ${item.number} — write text in POOL`;
+    card.appendChild(qhead);
+    card.appendChild(qtext);
 
-  // reveal animations (stagger)
-  [Lscore,Lcorrect,Lwrong,Ltime,Lavg].forEach((el, i) => {
-    setTimeout(()=> el.classList.add('reveal'), 80 * (i+1));
+    // answers area
+    if(item.type === 'text'){
+      // textarea for long answers
+      const textarea = document.createElement('textarea');
+      textarea.className = 'inputText';
+      textarea.placeholder = 'Type answer...';
+      textarea.rows = 5;
+      textarea.addEventListener('input', ()=> {
+        if(revealed) return;
+        const val = textarea.value.trim();
+        if(val.length>0) selections[uid] = val;
+        else delete selections[uid];
+        updateSelectionState();
+      });
+      card.appendChild(textarea); // <-- append the textarea (was wrong in original)
+    } else if(item.type === 'mcq'){
+      const opts = document.createElement('div');
+      opts.className = 'opts';
+      const labels = ['A','B','C','D'];
+      const choices = item.choices && item.choices.length ? item.choices : ['A','B','C','D'];
+      labels.forEach((lab, idx) => {
+        const b = document.createElement('div');
+        b.className = 'opt';
+        b.tabIndex = 0;
+        const text = choices[idx] ? `${lab}. ${choices[idx]}` : `${lab}`;
+        b.textContent = text;
+        b.dataset.letter = lab;
+        b.addEventListener('click', () => {
+          if(revealed) return;
+          Array.from(opts.children).forEach(ch=> ch.classList.remove('selected'));
+          b.classList.add('selected');
+          selections[uid] = lab;
+          play(sClick);
+          updateSelectionState();
+        });
+        b.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); b.click(); } });
+        opts.appendChild(b);
+      });
+      card.appendChild(opts); // <-- append options (was incorrectly appending textarea)
+    } else {
+      // unsupported type (we removed true/false)
+      const note = document.createElement('div');
+      note.className = 'note';
+      note.textContent = 'Unsupported question type';
+      card.appendChild(note); // <-- don't append textarea here
+    }
+
+    // per-card Reveal button
+    const ctrlRow = document.createElement('div');
+    ctrlRow.style.display='flex';
+    ctrlRow.style.justifyContent='flex-end';
+    ctrlRow.style.marginTop='6px';
+    const revealLocal = document.createElement('button');
+    revealLocal.className = 'btnSmall';
+    revealLocal.textContent = 'Reveal Answer';
+    revealLocal.addEventListener('click', ()=> revealAnswerForCard(uid, item, card));
+    ctrlRow.appendChild(revealLocal);
+    card.appendChild(ctrlRow);
+
+    answersEl.appendChild(card);
   });
-  // show retry buttons enabled
-  retryShuffle.disabled = false;
-  retrySame.disabled = false;
+
+  // global reveal button
+  revealBtn.style.display = 'inline-block';
+  revealBtn.onclick = ()=> {
+    if(revealed) return;
+    const batch = batches[currentBatchIndex];
+    batch.forEach(it => {
+      const uid = it._uid || `${it.number}`;
+      const card = answersEl.querySelector(`.qcard[data-uid="${uid}"]`);
+      if(card) revealAnswerForCard(uid, it, card);
+    });
+  };
+
+  updateSelectionState();
+  nextBtnRound.style.display = 'none';
+  confirmBtn.disabled = true;
 }
 
-function updateBadges(){
-  document.getElementById('score').textContent = score;
-  correctBadge.textContent = correctCount;
-  wrongBadge.textContent = wrongCount;
+/* update selection counter + confirm enable */
+function updateSelectionState(){
+  const answered = Object.keys(selections).length;
+  selectedCountEl.textContent = answered;
+  const need = batches[currentBatchIndex].length;
+  confirmBtn.disabled = (answered < need) || revealed;
 }
 
-/* ---------------- RESTART BUTTON HOOKS ---------------- */
-retryShuffle.addEventListener('click', ()=> {
-  retryShuffle.disabled = true; retrySame.disabled = true;
-  start(true, false);
+/* ---------- Replace existing revealAnswerForCard & global reveal handler with this code ---------- */
+
+/**
+ * Show the reveal UI for a single card (does NOT change scoring).
+ * Only mark "wrong" for MCQ if the user actually selected something (selections[uid] exists).
+ */
+function showRevealForCard(uid, item, card){
+  if(!card) return;
+  // don't allow revealing/hiding after final confirm lock
+  if(revealed) {
+    // revealed === true means Confirm has been pressed for the whole batch; keep it locked
+    return;
+  }
+
+  // mark card as revealed
+  card.dataset.revealed = 'true';
+
+  if(item.type === 'mcq'){
+    const opts = card.querySelectorAll('.opt');
+    const chosen = selections[uid]; // may be undefined
+    opts.forEach(optEl => {
+      const letter = optEl.dataset.letter;
+      if(letter === item.correct) optEl.classList.add('correct');
+      // only mark wrong if the user actually chose something and it differs
+      if(typeof chosen !== 'undefined' && chosen !== null && letter === chosen && letter !== item.correct){
+        optEl.classList.add('wrong');
+      }
+      // while revealed, prevent changing
+      optEl.style.pointerEvents = 'none';
+    });
+  } else if(item.type === 'text'){
+    // remove prior result nodes if any
+    card.querySelectorAll('.textResult').forEach(n=>n.remove());
+    // show the correct answer always
+    const input = card.querySelector('.inputText');
+    const correct = (item.correct||'').toString().trim();
+    const chosen = selections[uid];
+    // only show a Wrong badge if the user entered something and it's wrong
+    if(input){
+      if(typeof chosen !== 'undefined' && chosen !== null && chosen.toString().trim().length > 0){
+        const ans = chosen.toString().trim().toLowerCase();
+        const ok = ans === correct.toLowerCase();
+        const badge = document.createElement('span');
+        badge.className = 'textResult badge ' + (ok ? 'correct' : 'wrong');
+        badge.textContent = ok ? 'Correct' : 'Wrong';
+        input.insertAdjacentElement('afterend', badge);
+      }
+      // always show the correct answer text below
+      const reveal = document.createElement('div');
+      reveal.className = 'note reveal-answer';
+      reveal.style.marginTop = '8px';
+      reveal.innerHTML = `<strong>Answer: </strong><span class="badge">${correct}</span>`;
+      card.appendChild(reveal);
+      // disable input while revealed (optional)
+      input.disabled = true;
+    }
+  }
+
+  // update local reveal button text if present
+  const localBtn = card.querySelector('.btnSmall');
+  if(localBtn) localBtn.textContent = 'Hide Answer';
+}
+
+/**
+ * Hide the reveal UI for a single card (restore to pre-reveal state).
+ * This is disabled if the quiz has been confirmed (global revealed lock).
+ */
+function hideRevealForCard(uid, item, card){
+  if(!card) return;
+  // don't hide if Confirm has already been pressed (global lock)
+  if(revealed) return;
+
+  card.dataset.revealed = 'false';
+
+  // MCQ: remove correct/wrong classes and restore pointer events
+  if(item.type === 'mcq'){
+    const opts = card.querySelectorAll('.opt');
+    opts.forEach(optEl=>{
+      optEl.classList.remove('correct','wrong');
+      optEl.style.pointerEvents = ''; // allow clicking again
+    });
+  } else if(item.type === 'text'){
+    // re-enable input
+    const input = card.querySelector('.inputText');
+    if(input){
+      // remove result badge(s)
+      card.querySelectorAll('.textResult').forEach(n=>n.remove());
+      // remove reveal text block(s)
+      card.querySelectorAll('.note.reveal-answer').forEach(n=>n.remove());
+      input.disabled = false;
+    }
+  }
+
+  const localBtn = card.querySelector('.btnSmall');
+  if(localBtn) localBtn.textContent = 'Reveal Answer';
+}
+
+/**
+ * Toggle reveal (call show or hide depending on card state).
+ * Uses per-card data attribute .dataset.revealed (string 'true'/'false')
+ */
+function revealAnswerForCard(uid, item, card){
+  if(!card) return;
+  // If global Confirm lock is active, do nothing
+  if(revealed) return;
+
+  const isRevealed = card.dataset.revealed === 'true';
+  if(isRevealed){
+    hideRevealForCard(uid, item, card);
+  } else {
+    showRevealForCard(uid, item, card);
+  }
+}
+
+/* Update renderBatch -> make sure the local reveal button calls the toggle function.
+   In your renderBatch where you create `revealLocal` button, replace the previous handler
+   with this one (or update the existing):
+
+    revealLocal.addEventListener('click', ()=> revealAnswerForCard(uid, item, card));
+
+   The global reveal button (revealBtn) can be wired to toggle all cards in the batch:
+*/
+revealBtn.onclick = ()=>{
+  if(revealed) return; // lock after confirm
+  const batch = batches[currentBatchIndex] || [];
+  batch.forEach(it => {
+    const uid = it._uid || `${it.number}`;
+    const card = answersEl.querySelector(`.qcard[data-uid="${uid}"]`);
+    if(card) revealAnswerForCard(uid, it, card);
+  });
+};
+
+/* confirm/reveal logic — this counts for score and for building second-chance pool */
+confirmBtn.addEventListener('click', ()=>{
+  if(Object.keys(selections).length < batches[currentBatchIndex].length) return alert('Answer all slots before confirming.');
+  revealed = true;
+  let roundScore = 0;
+  const batch = batches[currentBatchIndex];
+  const batchWrong = [];
+
+  batch.forEach(item => {
+    const uid = item._uid || `${item.number}`;
+    const card = answersEl.querySelector(`.qcard[data-uid="${uid}"]`);
+    if(!card) return;
+
+    if(item.type === 'text'){
+      const input = card.querySelector('.inputText');
+      const answer = (selections[uid]||'').toString().trim().toLowerCase();
+      const correct = (item.correct||'').toString().trim();
+      input.disabled = true;
+
+      // remove prior
+      card.querySelectorAll('.textResult').forEach(n=>n.remove());
+
+      if(answer === correct.toLowerCase()){
+        input.style.borderColor = '#1e693f';
+        input.style.boxShadow = '0 6px 18px rgba(30,105,63,0.12)';
+        roundScore++;
+        play(sCorrect);
+        const okBadge = document.createElement('span');
+        okBadge.className = 'textResult badge correct';
+        okBadge.textContent = 'Correct';
+        input.insertAdjacentElement('afterend', okBadge);
+      } else {
+        input.style.borderColor = '#a32727';
+        input.style.boxShadow = '0 6px 18px rgba(163,39,39,0.12)';
+        play(sWrong);
+        batchWrong.push(item);
+        const wrongBadge = document.createElement('span');
+        wrongBadge.className = 'textResult badge wrong';
+        wrongBadge.textContent = 'Wrong';
+        input.insertAdjacentElement('afterend', wrongBadge);
+        const reveal = document.createElement('div');
+        reveal.className = 'note';
+        reveal.style.marginTop = '8px';
+        reveal.innerHTML = `<strong>Answer: </strong><span class="badge">${correct}</span>`;
+        card.appendChild(reveal);
+      }
+
+    } else if(item.type === 'mcq'){
+      const chosen = selections[uid];
+      const opts = card.querySelectorAll('.opt');
+      opts.forEach(optEl=>{
+        const letter = optEl.dataset.letter;
+        if(letter === item.correct) optEl.classList.add('correct');
+        if(letter === chosen && letter !== item.correct) optEl.classList.add('wrong');
+        optEl.style.pointerEvents='none';
+      });
+      if(chosen === item.correct){
+        roundScore++;
+        play(sCorrect);
+      } else {
+        play(sWrong);
+        batchWrong.push(item);
+      }
+    }
+  });
+
+  if(!secondChanceMode && batchWrong.length>0){
+    mainWrongPool.push(...batchWrong);
+  }
+
+  accScore += roundScore;
+  accScoreEl.textContent = accScore;
+
+  // next or final / second chance trigger
+  if(currentBatchIndex < batches.length - 1){
+    nextBtnRound.style.display = 'inline-block';
+  } else {
+    if(!secondChanceMode){
+      if(mainWrongPool.length > 0){
+        setTimeout(()=> triggerSecondChanceAuto(mainWrongPool), 650);
+      } else {
+        showFinal();
+      }
+    } else {
+      showFinal();
+    }
+  }
+  confirmBtn.disabled = true;
 });
-retrySame.addEventListener('click', ()=> {
-  retryShuffle.disabled = true; retrySame.disabled = true;
-  start(false, true);
+
+/* second chance helpers (kept from your original flow) */
+function dedupeByNumber(arr){
+  const map = {};
+  arr.forEach(it=> map[it.number] = it);
+  return Object.values(map);
+}
+function playCinematicOverlay(onComplete){
+  const overlay = document.createElement('div');
+  overlay.id = 'cinematic-overlay';
+  overlay.innerHTML = `
+    <div class="cine-bar top" style="top:0;"></div>
+    <div class="cine-bar bottom"></div>
+    <div class="cine-title">SECOND CHANCE</div>
+    <div class="cine-glow"></div>
+  `;
+  document.body.appendChild(overlay);
+  const topBar = overlay.querySelector('.cine-bar.top');
+  const bottomBar = overlay.querySelector('.cine-bar.bottom');
+  const title = overlay.querySelector('.cine-title');
+  topBar.style.animation = 'cine-bars-in .72s cubic-bezier(.2,.9,.2,1) forwards';
+  bottomBar.style.animation = 'cine-bars-in-bottom .72s cubic-bezier(.2,.9,.2,1) forwards';
+  title.style.animation = 'cine-title-in .85s cubic-bezier(.16,.9,.3,1) .18s forwards';
+  const totalDuration = 1200;
+  setTimeout(()=> {
+    overlay.style.animation = 'cine-fadeout .38s ease forwards';
+    setTimeout(()=> {
+      overlay.remove();
+      if(typeof onComplete === 'function') onComplete();
+    }, 420);
+  }, totalDuration);
+}
+function triggerSecondChanceAuto(wrongArr){
+  const deduped = dedupeByNumber(wrongArr);
+  if(deduped.length === 0) { showFinal(); return; }
+
+  playCinematicOverlay(()=> {
+    document.body.classList.add('second-chance');
+    wrapEl.classList.add('second-chance','intro');
+    setTimeout(()=> wrapEl.classList.remove('intro'), 900);
+
+    secondChancePool = deduped.map(x => ({ ...x }));
+    secondChanceMode = true;
+    prepareFromPool(secondChancePool, true);
+
+    finalBoxHolder.innerHTML = `<div class="finalBox reveal">
+      <h3>Second Chance — Retry Wrong Questions 🔁</h3>
+      <p class="small">You had <strong>${secondChancePool.length}</strong> missed question(s). Re-attempt them now.</p>
+    </div>`;
+    setTimeout(()=> renderBatch(), 700);
+  });
+}
+
+/* next/retry/reshuffle buttons */
+nextBtnRound.addEventListener('click', ()=>{
+  currentBatchIndex++;
+  renderBatch();
+});
+retrySameBtn.addEventListener('click', ()=> renderBatch());
+reshuffleAllBtn.addEventListener('click', ()=>{
+  if(secondChanceMode){
+    prepareFromPool(secondChancePool, true);
+    renderBatch();
+  } else {
+    prepareMain();
+    renderBatch();
+  }
 });
 
-/* ---------------- BOOT ---------------- */
-start(true);
+/* final summary */
+function showFinal(){
+  if(!secondChanceMode){
+    wrapEl.classList.remove('second-chance');
+    document.body.classList.remove('second-chance');
+  } else {
+    wrapEl.classList.add('second-chance');
+    document.body.classList.add('second-chance');
+  }
+  finalBoxHolder.innerHTML = `<div class="finalBox reveal">
+    <h3>All rounds complete 🎉</h3>
+    <p class="small">Total correct: <strong>${accScore}</strong> / ${POOL.length}</p>
+    <div style="margin-top:10px; display:flex; gap:8px; justify-content:center">
+      <button class="btnPrimary" id="restartSame">Restart (same order)</button>
+      <button class="btnGhost" id="restartShuffle">Restart (reshuffle)</button>
+    </div>
+  </div>`;
+  document.getElementById('restartSame').addEventListener('click', ()=>{
+    secondChanceMode = false; mainWrongPool = [];
+    wrapEl.classList.remove('second-chance'); document.body.classList.remove('second-chance');
+    prepareFromPool(POOL, false); accScore = 0; accScoreEl.textContent = accScore; renderBatch();
+  });
+  document.getElementById('restartShuffle').addEventListener('click', ()=>{ prepareMain(); renderBatch(); });
+}
 
-
-
-
+/* boot */
+function boot(){
+  prepareMain();
+  renderBatch();
+}
+boot();
 </script>
 </body>
 </html>
