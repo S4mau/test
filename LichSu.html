@@ -314,12 +314,12 @@ body.second-chance {
     <div class="viewer-controls">
       <button class="vbtn" id="prevBtn">◀ Prev</button>
     </div>
-   <div class="imgWrap"><img id="viewerImg" src="assets/VatLy-Img/1-vl.png" alt="q-img" onerror="this.style.filter='grayscale(1)';"></div>
+   <div class="imgWrap"><img id="viewerImg" src="assets/LichSu-Img/ls-1.png" alt="q-img" onerror="this.style.filter='grayscale(1)';"></div>
     <div class="viewer-controls">
       <button class="vbtn" id="nextBtn">Next ▶</button>
     </div>
     <div style="width:12px"></div>
-    <div class="small" id="viewerIndex">Image 1 / 19</div>
+    <div class="small" id="viewerIndex">Image 1 / 13</div>
   </div>
 
   <section>
@@ -359,37 +359,58 @@ body.second-chance {
  - PER_ROUND determines how many answer slots per round (10)
  - Fill POOL with your real question numbers and correct answers.
 */
-const TOTAL_Q = 19;
+const TOTAL_Q = 13;
 const PER_ROUND = 10;
 
 const POOL = [
-{ number: 77, subject: 'C1-B3-PI', type: 'mcq', correct: 'C' },      { number: 89, subject: 'C13-B3-PI', type: 'mcq', correct: 'A' },
-{ number: 78, subject: 'C2-B3-PI', type: 'mcq', correct: 'D' },      { number: 90, subject: 'C14-B3-PI', type: 'mcq', correct: 'D' },
-{ number: 79, subject: 'C3-B3-PI', type: 'mcq', correct: 'A' },      { number: 91, subject: 'C15-B3-PI', type: 'mcq', correct: 'A' },
-{ number: 80, subject: 'C4-B3-PI', type: 'mcq', correct: 'C' },      { number: 92, subject: 'C16-B3-PI', type: 'mcq', correct: 'A' },
-{ number: 81, subject: 'C5-B3-PI', type: 'mcq', correct: 'A' },      { number: 93, subject: 'C17-B3-PI', type: 'mcq', correct: 'A' },
-{ number: 82, subject: 'C6-B3-PI', type: 'mcq', correct: 'B' },      { number: 94, subject: 'C18-B3-PI', type: 'mcq', correct: 'C' },
-{ number: 83, subject: 'C7-B3-PI', type: 'mcq', correct: 'A' },      { number: 95, subject: 'C19-B3-PI', type: 'mcq', correct: 'A' },
-{ number: 84, subject: 'C8-B3-PI', type: 'mcq', correct: 'C' },      { number: 96, subject: 'C20-B3-PI', type: 'mcq', correct: 'A' },
-{ number: 85, subject: 'C9-B3-PI', type: 'mcq', correct: 'C' },      { number: 97, subject: 'C21-B3-PI', type: 'mcq', correct: 'A' },
-{ number: 86, subject: 'C10-B3-PI', type: 'mcq', correct: 'D' },     { number: 98, subject: 'C22-B3-PI', type: 'mcq', correct: 'C' },
-{ number: 87, subject: 'C11-B3-PI', type: 'mcq', correct: 'D' },     { number: 99, subject: 'C23-B3-PI', type: 'mcq', correct: 'B' },
-{ number: 88, subject: 'C12-B3-PI', type: 'mcq', correct: 'B' },     { number: 100, subject: 'C24-B3-PI', type: 'mcq', correct: 'A' },
-{ number: 101, subject: 'C25-B3-PI', type: 'mcq', correct: 'A' },
+{ number: 1, type: 'mcq', correct: 'A' },   { number: 37, type: 'mcq', correct: 'B' },
+{ number: 2, type: 'mcq', correct: 'C' },   { number: 38, type: 'mcq', correct: 'A' },
+{ number: 3, type: 'mcq', correct: 'A' },   { number: 39, type: 'mcq', correct: 'B' },
+{ number: 4, type: 'mcq', correct: 'B' },   { number: 40, type: 'mcq', correct: 'D' },
+{ number: 5, type: 'mcq', correct: 'A' },   { number: 41, type: 'mcq', correct: 'A' },
+{ number: 6, type: 'mcq', correct: 'A' },   { number: 42, type: 'mcq', correct: 'C' },
+{ number: 7, type: 'mcq', correct: 'A' },   { number: 43, type: 'mcq', correct: 'B' },
+{ number: 8, type: 'mcq', correct: 'B' },   { number: 44, type: 'mcq', correct: 'D' },
+{ number: 9, type: 'mcq', correct: 'B' },   { number: 45, type: 'mcq', correct: 'C' },
+{ number: 10, type: 'mcq', correct: 'A' },  { number: 46, type: 'mcq', correct: 'A' },
+{ number: 11, type: 'mcq', correct: 'C' },  { number: 47, type: 'mcq', correct: 'C' },
+{ number: 12, type: 'mcq', correct: 'B' },  { number: 48, type: 'mcq', correct: 'C' },
+{ number: 13, type: 'mcq', correct: 'A' },  { number: 49, type: 'mcq', correct: 'C' },
+{ number: 14, type: 'mcq', correct: 'A' },  { number: 50, type: 'mcq', correct: 'D' },
+{ number: 15, type: 'mcq', correct: 'C' },  { number: 51, type: 'mcq', correct: 'D' },
+{ number: 16, type: 'mcq', correct: 'C' },  { number: 52, type: 'mcq', correct: 'A' },
+{ number: 17, type: 'mcq', correct: 'B' },  { number: 53, type: 'mcq', correct: 'A' },
+{ number: 18, type: 'mcq', correct: 'A' },  { number: 54, type: 'mcq', correct: 'D' },
+{ number: 19, type: 'mcq', correct: 'B' },  { number: 55, type: 'mcq', correct: 'A' },
+{ number: 20, type: 'mcq', correct: 'A' },  { number: 56, type: 'mcq', correct: 'D' },
+{ number: 21, type: 'mcq', correct: 'A' },  { number: 57, type: 'mcq', correct: 'D' },
+{ number: 22, type: 'mcq', correct: 'D' },  { number: 58, type: 'mcq', correct: 'B' },
+{ number: 23, type: 'mcq', correct: 'D' },  { number: 59, type: 'mcq', correct: 'B' },
+{ number: 24, type: 'mcq', correct: 'B' },  { number: 60, type: 'mcq', correct: 'D' },
+{ number: 25, type: 'mcq', correct: 'C' },  { number: 61, type: 'mcq', correct: 'B' },
+{ number: 26, type: 'mcq', correct: 'B' },  { number: 62, type: 'mcq', correct: 'B' },
+{ number: 27, type: 'mcq', correct: 'D' },  { number: 63, type: 'mcq', correct: 'D' },
+{ number: 28, type: 'mcq', correct: 'D' },  { number: 64, type: 'mcq', correct: 'A' },
+{ number: 29, type: 'mcq', correct: 'D' },  { number: 65, type: 'mcq', correct: 'B' },
+{ number: 30, type: 'mcq', correct: 'C' },  { number: 66, type: 'mcq', correct: 'C' },
+{ number: 31, type: 'mcq', correct: 'A' },  { number: 67, type: 'mcq', correct: 'B' },
+{ number: 32, type: 'mcq', correct: 'D' },  { number: 68, type: 'mcq', correct: 'A' },
+{ number: 33, type: 'mcq', correct: 'B' },  { number: 69, type: 'mcq', correct: 'A' },
+{ number: 34, type: 'mcq', correct: 'A' },  { number: 70, type: 'mcq', correct: 'B' },
+{ number: 35, type: 'mcq', correct: 'C' },  { number: 71, type: 'mcq', correct: 'C' },
+{ number: 36, type: 'mcq', correct: 'B' },  { number: 72, type: 'mcq', correct: 'C' },
 
-// BÀI 3 - P = II
-{ number: 102, subject: 'C26-B3-PII', type: 'multi', correct: ['A', 'C'] },   { number: 105, subject: 'C29-B3-PII', type: 'multi', correct: ['B', 'C'] },
-{ number: 103, subject: 'C27-B3-PII', type: 'multi', correct: ['A', 'D'] },   { number: 106, subject: 'C30-B3-PII', type: 'multi', correct: ['B', 'D'] },
-{ number: 104, subject: 'C28-B3-PII', type: 'multi', correct: ['D', 'C'] },   { number: 107, subject: 'C31-B3-PII', type: 'multi', correct: ['D', 'C'] },
+//P II
+{ number: 73, subject: 'C1-P-II', type: 'multi', correct: ['A','B'] },   { number: 80, subject: 'C8-P-II', type: 'multi', correct: ['C','D'] },
+{ number: 74, subject: 'C2-P-II', type: 'multi', correct: ['A','C','D'] },   { number: 81, subject: 'C9-P-II', type: 'multi', correct: ['B','C','D'] },
+{ number: 75, subject: 'C3-P-II', type: 'multi', correct: ['A','D'] },   { number: 82, subject: 'C10-P-II', type: 'multi', correct: ['D'] },
+{ number: 76, subject: 'C4-P-II', type: 'multi', correct: ['A','B','C'] },   { number: 83, subject: 'C11-P-II', type: 'multi', correct: ['A','B','D'] },
+{ number: 77, subject: 'C5-P-II', type: 'multi', correct: ['B','D'] },   { number: 84, subject: 'C12-P-II', type: 'multi', correct: ['B','C','D'] },
+{ number: 78, subject: 'C6-P-II', type: 'multi', correct: ['B','C'] },   { number: 85, subject: 'C13-P-II', type: 'multi', correct: ['B'] },
+{ number: 79, subject: 'C7-P-II', type: 'multi', correct: ['B','D'] },   { number: 86, subject: 'C14-P-II', type: 'multi', correct: ['A','B','D'] },
 
-// BÀI 3 - P = III
-{ number: 108, subject: 'C32-B3-PIII', type: 'text', correct: '750' },    { number: 112, subject: 'C36-B3-PIII', type: 'text', correct: '10' },
-{ number: 109, subject: 'C33-B3-PIII', type: 'text', correct: '-70' },    { number: 113, subject: 'C37-B3-PIII', type: 'text', correct: '1125' },
-{ number: 110, subject: 'C34-B3-PIII', type: 'text', correct: '20' },    { number: 114, subject: 'C38-B3-PIII', type: 'text', correct: '1282' },
-{ number: 111, subject: 'C35-B3-PIII', type: 'text', correct: '160' },    { number: 115, subject: 'C39-B3-PIII', type: 'text', correct: '1844' },
 
-];
-
+]
 // 👇 This goes OUTSIDE the array
 POOL.forEach(q => q._uid = `${q.subject || 'General'}-${q.number}`);
 /* ---------------- state ---------------- */
@@ -459,7 +480,8 @@ function prepareMain(){
 /* ---------------- viewer ---------------- */
 function updateViewer(){
   // load images from VatLy-Img named like: 1-vl.png, 2-vl.png, ...
-  viewerImg.src = `assets/VatLy-Img/${viewIndex}-vl.png`;
+viewerImg.src = `assets/LichSu-Img/ls-${viewIndex}.png`;
+
   viewerIndex.textContent = `Image ${viewIndex} / ${TOTAL_Q}`;
 }
 

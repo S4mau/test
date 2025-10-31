@@ -207,9 +207,9 @@ header {
                  <button class="menu-button" onclick="showSubject('Physic')">Physic</button>
                 <button class="menu-button" onclick="showSubject('Literature')">Literature</button>
                  <button class="menu-button" onclick="showSubject('KTPL')">KTPL</button>
-                <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
-                 <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
-                <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
+                <button class="menu-button" onclick="showSubject('Lichsu')">Lichsu</button>
+                 <button class="menu-button" onclick="showSubject('DiaLi')">Dia Li</button>
+                <button class="menu-button" onclick="showSubject('SinhHoc')">Sinh Hoc</button>
                  <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
     </div>
 
@@ -257,12 +257,38 @@ const subjects = {
         ]
     },
 
-    // **CRITICAL: Added the "In Development" subject key for the main menu buttons**
-    "In Development": { 
-        title: "Subject Pending", 
-        message: "This subject is currently under construction. Check back soon!", 
-        quizzes: [] 
-    }
+ 
+
+    Lichsu: { 
+ title: "Lichsu Quizzes", 
+ quizzes: [
+ { name: "GK1", link: "LichSu.html" },
+ { name: "", link: "" },
+ { name: "", link: "" }
+ ]
+ },
+
+
+
+  DiaLi: { 
+ title: "DiaLi Quizzes", 
+ quizzes: [
+ { name: "GK", link: "I-DiaLi.html" },
+ { name: "", link: "" },
+ { name: "", link: "" }
+ ]
+ },
+
+
+
+  SinhHoc: { 
+ title: "  SinhHoc Quizzes", 
+ quizzes: [
+ { name: "GK", link: "I-SinhHoc.html" },
+ { name: "", link: "" },
+ { name: "", link: "" }
+ ]
+ },
 };
 
 // --- 1. MISSING playClick() FUNCTION ---
