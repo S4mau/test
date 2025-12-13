@@ -421,10 +421,10 @@ function prepareMain(){
 
 /* ----------------- Viewer ----------------- */
 function updateViewer(){
-viewerImg.src = `assets/LichSu-Img/ls-${viewIndex}.png`;
-
+  viewerImg.src = `./assets/LichSu-Img/ls-${viewIndex}.png`;
   viewerIndex.textContent = `Image ${viewIndex} / ${TOTAL_Q}`;
 }
+
 viewerImg.onerror = function(){
   if(viewerImg.src && viewerImg.src.endsWith('.png')) { viewerImg.src = viewerImg.src.replace('.png','.jpg'); return; }
   this.style.filter = 'grayscale(1)';
