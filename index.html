@@ -1,353 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz Hub | Game Menu</title>
-<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-<style>
-/* ---------------- BASE STYLES ---------------- */
-* {
-    box-sizing: border-box;
-    font-family: 'VT323', monospace !important;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Hub | Game Menu — Beachy Vibe</title>
 
-/* 70px is the height of your header */
-:root {
-    --header-height: 70px;
-}
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-body {
-    margin: 0;
-    color: white;
-    background: black;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+  <style>
+    :root{
+      --header-height: 72px;
+      --sand: #f7efe6;    /* soft sand */
+      --sea-1: #b5ecf0;    /* light sea */
+      --sea-2: #74c6d9;    /* deeper sea */
+      --accent: #0b7a78;   /* teal accent */
+      --muted: rgba(8,38,38,0.08);
+      --glass: rgba(255,255,255,0.65);
+      --text-dark: #07323b;
+    }
 
-    /* Restoring the background image (adjust path if needed) */
-    background: url('assets/bg.png') center center / cover no-repeat fixed;
-    position: relative;
-}
+    *{box-sizing:border-box;font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--sea-1) 0%, rgba(181,236,240,0.6) 40%, #ffffff 100%);color:var(--text-dark);}
 
-/* ---------------- HEADER STYLES ---------------- */
-header {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    /* NEW: Dark, moody, low-contrast gradient (Deep Red to Deep Purple) */
-    background: linear-gradient(90deg, #4d0d0d, #330044); 
-    
-    color: white;
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1.8em;
-    font-weight: bold;
-    /* Soften the shadow so it doesn't look like a bright light source */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-    z-index: 9999;
-}
+    /* Subtle decorative waves using pseudo-element so no external image is required */
+    body::before{
+      content:"";position:fixed;left:0;right:0;top:0;height:45vh;pointer-events:none;z-index:0;
+      background-image: radial-gradient(circle at 10% 40%, rgba(255,255,255,0.12) 0 10%, transparent 12%),
+                        radial-gradient(circle at 90% 60%, rgba(255,255,255,0.08) 0 10%, transparent 12%);
+      opacity:0.9;mix-blend-mode:overlay;transform-origin:center;filter:blur(6px);
+    }
 
-.header-title {
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
-}
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 50px;
-}
-.menu-link {
-    color: white;
-    text-decoration: none;
-    font-size: 0.9em;
-    background: rgba(255,255,255,0.1);
-    padding: 6px 12px;
-    border-radius: 12px;
-    transition: background 0.25s, transform 0.25s;
-}
-.menu-link:hover {
-    background: rgba(255,255,255,0.25);
-    transform: scale(1.05);
-}
-#fumoIcon {
-    width: 48px;
-    height: 48px;
-    cursor: pointer;
-    transition: transform 0.15s;
-}
-#fumoIcon:active {
-    transform: scaleX(1.3) scaleY(0.7);
-}
+    header{position:fixed;top:0;left:0;width:100%;height:var(--header-height);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:5;
+      background:var(--glass);backdrop-filter: blur(6px) saturate(1.05);box-shadow:0 6px 20px rgba(8,38,38,0.06);
+    }
 
-/* ---------------- MAIN CONTENT WRAPPER FIX ---------------- */
-/* This wrapper handles the full-screen height minus the fixed header */
-#content-wrapper {
-    /* Set the minimum height to the viewport height, minus the header height */
-    min-height: calc(100vh - var(--header-height)); 
-    margin-top: var(--header-height); /* Push content down below the fixed header */
-    display: flex; /* Use flex to center the menu within this container */
-    justify-content: center;
-    align-items: center;
-}
+    .header-title{font-weight:600;letter-spacing:0.6px;font-size:1.25rem;color:var(--accent);display:flex;align-items:center;gap:10px}
+    .header-title img{width:36px;height:36px;border-radius:999px;box-shadow:0 4px 10px rgba(11,122,120,0.18)}
 
+    .header-right{display:flex;align-items:center;gap:12px}
+    .menu-link{font-size:0.9rem;padding:8px 12px;border-radius:12px;text-decoration:none;color:var(--accent);background:transparent}
 
-/* --- MAIN MENU (FNaF vibe) --- */
-#main-menu {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* Use 100% of the content-wrapper height to ensure vertical centering */
-    height: 100%; 
-    text-align: left;
-    padding: 20px; /* Add some padding just in case */
-}
+    /* layout wrapper keeps previous IDs so JS still works */
+    #content-wrapper{min-height:calc(100vh - var(--header-height));margin-top:var(--header-height);display:flex;justify-content:center;align-items:center;padding:28px;z-index:2}
 
-/*Adjust words here*/
-#main-menu h2 {
-    font-size: 3rem;
-    margin-bottom: 50px;
-    letter-spacing: 3px;
-}
+    /* Main menu adjusted to be card-based, calm and roomy */
+    #main-menu{width:100%;max-width:980px;display:flex;flex-direction:column;gap:22px;align-items:stretch}
+    #main-menu h2{margin:0;font-size:2rem;color:var(--text-dark);font-weight:600;text-align:left}
 
-.menu-button {
-    display: block;
-    font-size: 2rem;
-    margin: 10px 0;
-    text-decoration: none;
-    color: white;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: 0.2s;
-    position: relative;
-    text-align: left;
-}
+    .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
 
-/* highlight arrow like FNaF */
-.menu-button::before {
-    content: ">>";
-    opacity: 0;
-    position: absolute;
-    left: -40px;
-    transition: opacity 0.2s;
-}
+    .menu-button{
+      display:flex;align-items:center;padding:16px 18px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.9), rgba(255,255,255,0.85));
+      box-shadow:0 6px 18px var(--muted);border:1px solid rgba(8,38,38,0.06);cursor:pointer;font-size:1.05rem;color:var(--text-dark);text-align:left;transition:transform .18s ease, box-shadow .18s ease;
+    }
 
-.menu-button:hover::before {
-    opacity: 1;
-}
-.menu-button:hover {
-    outline: 2px solid white;
-  
-    outline-offset: 4px;
-}
+    .menu-button:hover{transform:translateY(-6px);box-shadow:0 18px 30px rgba(8,38,38,0.08)}
 
-/* --- QUIZ SCREEN --- */
-#quiz-screen {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    height: 100%; /* Use 100% of content-wrapper */
-    width: 100%;
-}
-.quiz-card {
-    background: #00000000;
-    border: 3px solid white;
-    padding: 20px;
-    width: 400px;
-    text-align: center;
-    font-size: 1.2rem;
-}
-/* ... (Rest of quiz-screen styles are fine) ... */
-.quiz-card h3 { margin-bottom: 15px; border-bottom: 2px solid white; padding-bottom: 5px; }
-.quiz-card a { display: block; background: #00000000; margin: 8px 0; padding: 10px; border: 2px solid white; text-decoration: none; color: white; transition: 0.2s; }
-.quiz-card a:hover { background: #00000000; transform: scale(1.05); outline: 2px solid white; outline-offset: 4px; }
-.back-button { display: block; margin-bottom: 15px; background: #00000000; padding: 5px 10px; border: 2px solid white; color: white; cursor: pointer; }
+    .menu-button::before{content:"";width:10px;height:10px;border-radius:8px;margin-right:12px;background:linear-gradient(180deg,var(--sea-2),var(--sea-1));flex-shrink:0}
 
+    /* Quiz screen — keep visible look but softer */
+    #quiz-screen{display:none;justify-content:center;align-items:center;width:100%}
+    .quiz-card{background:rgba(255,255,255,0.9);border-radius:14px;padding:18px;width:420px;box-shadow:0 12px 30px rgba(8,38,38,0.06);border:1px solid rgba(8,38,38,0.04)}
+    .quiz-card h3{margin:0 0 12px 0;font-size:1.2rem}
+    .quiz-card a{display:block;padding:10px;border-radius:10px;text-decoration:none;margin:8px 0;color:var(--text-dark);border:1px solid rgba(8,38,38,0.06);background:transparent}
+    .quiz-card a:hover{transform:translateX(6px)}
+    .back-button{background:transparent;border:none;padding:6px 8px;border-radius:8px;cursor:pointer}
 
-/* ---------------- ANIMATION ---------------- */
-/* Apply animation to all content inside the wrapper */
-#content-wrapper * {
-    opacity: 0;
-    transform: scale(0.95);
-    animation: fadeZoomIn 0.8s ease forwards;
-}
+    /* small screens */
+    @media (max-width:640px){
+      #main-menu h2{font-size:1.4rem}
+      .menu-button{font-size:0.95rem;padding:14px}
+      .quiz-card{width:92%}
+    }
 
-/* Delay different elements for a staggered effect */
-#main-menu h2 { animation-delay: 0.2s; }
-.menu-button { animation-delay: 0.4s; }
-.menu-button:nth-child(3) { animation-delay: 0.6s; }
-.menu-button:nth-child(4) { animation-delay: 0.8s; }
-.menu-button:nth-child(5) { animation-delay: 1s; }
+    /* subtle entrance animation (gentle) */
+    #content-wrapper *{opacity:0;transform:translateY(6px);animation:fadeInUp .6s ease forwards}
+    #main-menu h2{animation-delay:0.05s}
+    .menu-button{animation-delay:0.12s}
+    .menu-button:nth-child(2){animation-delay:0.14s}
+    .menu-button:nth-child(3){animation-delay:0.16s}
 
-@keyframes fadeZoomIn {
-    to { opacity: 1; transform: scale(1); }
-}
-
-
-
-
-</style>
+    @keyframes fadeInUp{to{opacity:1;transform:none}}
+  </style>
 </head>
+
 <body>
-
-<header>
-    <div class="header-title"></div>
-    <div class="header-right">
-        <a href="index.html" class="menu-link">Menu</a>
-     
+  <header>
+    <div class="header-title">
+      <img src="assets/icon-sun.png" alt="sun icon" onerror="this.style.display='none'">
+      <span>Quiz Hub</span>
     </div>
-</header>
+    <div class="header-right">
+      <a href="index.html" class="menu-link">Menu</a>
+    </div>
+  </header>
 
-
-<div id="content-wrapper">
-
+  <div id="content-wrapper">
     <div id="main-menu">
-        <h2>Select a Subject</h2>
-                 <button class="menu-button" onclick="showSubject('Physic')">Physic</button>
-                <button class="menu-button" onclick="showSubject('Literature')">Literature</button>
-                 <button class="menu-button" onclick="showSubject('KTPL')">KTPL</button>
-                <button class="menu-button" onclick="showSubject('Lichsu')">Lichsu</button>
-                 <button class="menu-button" onclick="showSubject('DiaLi')">Dia Li</button>
-                <button class="menu-button" onclick="showSubject('SinhHoc')">Sinh Hoc</button>
-                 <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
+      <h2>Select a Subject</h2>
+
+      <!-- Keep original buttons and IDs so JS still works exactly the same -->
+      <div class="menu-grid">
+        <button class="menu-button" onclick="showSubject('Physic')">Physic</button>
+        <button class="menu-button" onclick="showSubject('Literature')">Literature</button>
+        <button class="menu-button" onclick="showSubject('KTPL')">KTPL</button>
+        <button class="menu-button" onclick="showSubject('Lichsu')">Lichsu</button>
+        <button class="menu-button" onclick="showSubject('DiaLi')">Dia Li</button>
+        <button class="menu-button" onclick="showSubject('SinhHoc')">Sinh Hoc</button>
+        <button class="menu-button" onclick="showSubject('In Development')">In Development</button>
+      </div>
     </div>
 
     <div id="quiz-screen">
-        <div class="quiz-card">
-            <button class="back-button" onclick="showMainMenu()"><< Back</button>
-            <div id="quiz-content"></div>
-        </div>
+      <div class="quiz-card">
+        <button class="back-button" onclick="showMainMenu()">&lt;&lt; Back</button>
+        <div id="quiz-content"></div>
+      </div>
     </div>
-</div>
+  </div>
 
-<audio id="clickSound" src="assets/sounds/sfx_click.ogg" preload="auto"></audio>
+  <audio id="clickSound" src="assets/sounds/sfx_click.ogg" preload="auto"></audio>
 
+  <!-- NOTE: JS functions are unchanged — this file intentionally keeps original JS behavior. -->
+  <script>
+    // --- KEEP ORIGINAL DATA & FUNCTIONS: (no functional behavior changed) ---
+    const subjects = {
+      Physic: { title: "Physic Quizzes", quizzes: [ { name: "GK1-Bai-1", link: "Bai-1-GK-Vat-Ly.html" }, { name: "GK1-Bai-2", link: "Bai-2-GK-Vat-Ly.html" }, { name: "GK1-Bai-3", link: "Bai-3-GK-Vat-Ly.html" } ] },
+      Literature: { title: "Literature Quizzes", quizzes: [ { name: "PTBD, BPTT, TT, NK", link: "#" }, { name: "In Development ", link: "#" }, { name: "In Development", link: "#" } ] },
+      "KTPL": { title: "KTPL Quiz", quizzes: [ { name: "GK", link: "GK-KTPL.html" }, { name: "In Development ", link: "#" }, { name: "In Development", link: "#" } ] },
+      Lichsu: { title: "Lichsu Quizzes", quizzes: [ { name: "GK1", link: "LichSu.html" }, { name: "", link: "" }, { name: "", link: "" } ] },
+      DiaLi: { title: "DiaLi Quizzes", quizzes: [ { name: "GK", link: "I-DiaLi.html" }, { name: "", link: "" }, { name: "", link: "" } ] },
+      SinhHoc: { title: "  SinhHoc Quizzes", quizzes: [ { name: "GK", link: "I-SinhHoc.html" }, { name: "", link: "" }, { name: "", link: "" } ] },
+    };
 
-<script>
+    function playClick(){const clickSound=document.getElementById('clickSound');try{clickSound.currentTime=0;clickSound.play();}catch(e){}}
 
-// --- CORRECTED DATA STRUCTURE WITH REDIRECT PATHS ---
-const subjects = {
- Physic: { 
- title: "Physic Quizzes", 
- quizzes: [
- { name: "GK1-Bai-1", link: "Bai-1-GK-Vat-Ly.html" },
- { name: "GK1-Bai-2", link: "Bai-2-GK-Vat-Ly.html" },
- { name: "GK1-Bai-3", link: "Bai-3-GK-Vat-Ly.html" }
- ]
- },
-
-
- Literature: { 
- title: "Literature Quizzes", 
- quizzes: [
- { name: "PTBD, BPTT, TT, NK", link: "#" },
- { name: "In Development ", link: "#" }, // Renamed for clarity
- { name: "In Development", link: "#" }
- ]
- },
-
-
- "KTPL": { 
-        title: "KTPL Quiz", 
-        quizzes: [
-            { name: "GK", link: "GK-KTPL.html" },
-                 { name: "In Development ", link: "#" }, // Renamed for clarity
-                   { name: "In Development", link: "#" }
-        ]
-    },
-
- 
-
-    Lichsu: { 
- title: "Lichsu Quizzes", 
- quizzes: [
- { name: "GK1", link: "LichSu.html" },
- { name: "", link: "" },
- { name: "", link: "" }
- ]
- },
-
-
-
-  DiaLi: { 
- title: "DiaLi Quizzes", 
- quizzes: [
- { name: "GK", link: "I-DiaLi.html" },
- { name: "", link: "" },
- { name: "", link: "" }
- ]
- },
-
-
-
-  SinhHoc: { 
- title: "  SinhHoc Quizzes", 
- quizzes: [
- { name: "GK", link: "I-SinhHoc.html" },
- { name: "", link: "" },
- { name: "", link: "" }
- ]
- },
-};
-
-// --- 1. MISSING playClick() FUNCTION ---
-function playClick() {
- const clickSound = document.getElementById('clickSound');
- try {
- clickSound.currentTime = 0;
- clickSound.play();
- } catch(e) {}
-}
-
-// --- 2. CORRECTED showSubject() FUNCTION ---
-function showSubject(subjectKey) { // Changed name to subjectKey for clarity
- playClick(); 
- 
- const data = subjects[subjectKey];
-
-    if (data && data.message) {
-        // Handle "In Development" main button click
-        document.getElementById('quiz-content').innerHTML = `
-            <h3>${data.title}</h3>
-            <p style="margin-top: 30px; font-size:1.5rem;">${data.message}</p>
-        `;
-    } else if (data) {
-        // Handle regular subject button click
-        const quizLinks = data.quizzes.map(quiz => {
-            const isUnavailable = quiz.link === '#';
-            const className = isUnavailable ? "unavailable" : ""; 
-
-            // Add listener to prevent navigation on unavailable links
-            const onClickHandler = isUnavailable ? `onclick="event.preventDefault()"` : '';
-            
-            return `<a href="${quiz.link}" class="${className}" ${onClickHandler}>${quiz.name}</a>`;
-        }).join('');
-        
-        document.getElementById('quiz-content').innerHTML = `
-            <h3>${data.title}</h3>
-            ${quizLinks}
-        `;
-    } else {
-        // Fallback for an undefined subject (optional)
+    function showSubject(subjectKey){playClick();
+      const data = subjects[subjectKey];
+      if (data && data.message){
+        document.getElementById('quiz-content').innerHTML = `<h3>${data.title}</h3><p style="margin-top:30px;font-size:1.1rem">${data.message}</p>`;
+      } else if (data){
+        const quizLinks = data.quizzes.map(quiz => { const isUnavailable = quiz.link === '#'; const className = isUnavailable ? "unavailable" : ""; const onClickHandler = isUnavailable ? `onclick="event.preventDefault()"` : ''; return `<a href="${quiz.link}" class="${className}" ${onClickHandler}>${quiz.name}</a>`; }).join('');
+        document.getElementById('quiz-content').innerHTML = `<h3>${data.title}</h3>${quizLinks}`;
+      } else {
         document.getElementById('quiz-content').innerHTML = '<h3>Error: Subject Not Found</h3>';
+      }
+      document.getElementById('main-menu').style.display = "none";
+      document.getElementById('quiz-screen').style.display = "flex";
     }
 
-document.getElementById('main-menu').style.display = "none";
- document.getElementById('quiz-screen').style.display = "flex";
-}
-
-// --- 3. MISSING showMainMenu() FUNCTION ---
-function showMainMenu() {
-    playClick(); 
-    
-    // Hide the quiz screen
-    document.getElementById('quiz-screen').style.display = "none";
-    
-    // Show the main menu
-    document.getElementById('main-menu').style.display = "flex";
-}
-</script>
-</script>
+    function showMainMenu(){playClick();document.getElementById('quiz-screen').style.display = "none";document.getElementById('main-menu').style.display = "flex";}
+  </script>
 </body>
 </html>
