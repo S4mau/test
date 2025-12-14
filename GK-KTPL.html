@@ -6,290 +6,258 @@
 <title>Image-backed Quiz — Multi-type Demo (Second Chance)</title>
 <style>
 :root{
-  --bg:#071021; --card:#0f1724; --muted:#c8d0df; --accent:#ffb703;
-  --ok:#1e693f; --bad:#a32727;
+  --bg-top: #e7f9fb;    /* pale sky */
+  --bg-bottom: #f6efe0; /* warm sand */
+  --card: #fff8f0;      /* soft sand card */
+  --muted: #355258;     /* darker muted text for contrast */
+  --accent-sea: #0b7a78;/* teal sea accent (menu vibe) */
+  --accent-sea-2:#056a64; /* darker teal */
+  --sun: #ffb703;       /* warm highlight */
+  --ok: #1e693f;
+  --bad: #a32727;
+  --header-height: 72px;
 }
-/* ---------- base (unchanged structure, verbose) ---------- */
+
+/* ---------- PAGE BASE (layout preserved) ---------- */
 *{box-sizing:border-box}
-body{
-  margin:0; min-height:100vh; font-family:Inter,system-ui,Arial;
-  background:linear-gradient(180deg,#071021 0%,#1a1730 100%);
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;
+  background:linear-gradient(180deg,var(--bg-top) 0%, var(--bg-bottom) 100%);
   color:var(--muted);
-  display:flex; align-items:center; justify-content:center; padding:18px;
-  transition: background .7s ease, color .45s ease;
+  transition:background .45s,color .45s}
+body {
+  /* REMOVE display: flex; align-items: center; justify-content: center; */
+  display: block; 
+  min-height: 100%;
+  margin: 0;
+  font-family: Inter, system-ui, Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  color: var(--muted);
+  transition: background .45s, color .45s;
+
+  /* NEW PADDING SETTINGS */
+  padding: 18px;
+  /* This pushes ALL content down below the 72px header + extra space */
+  padding-top: calc(var(--header-height) + 24px); 
 }
-.wrap{
-  width:min(1100px,96vw);
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12));
-  border-radius:12px; padding:14px;
-  box-shadow:0 12px 40px rgba(2,6,23,0.6);
-  border:1px solid rgba(255,255,255,0.03);
-  transition: background .6s ease, box-shadow .6s ease, border-color .6s ease, color .45s ease, transform .45s;
+/* ---------- TOP HEADER (teal menu vibe, readable) ---------- */
+header{
+  position: fixed;
+  top: 0; left: 0; right:0;
+  height: var(--header-height);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 26px; z-index:9999;
+  background: linear-gradient(90deg, var(--accent-sea), var(--accent-sea-2));
+  color: #fff; font-weight:800;
+  box-shadow: 0 8px 30px rgba(7,50,50,0.14);
+  backdrop-filter: blur(6px) saturate(1.05);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
-/* header/viewer */
-.header{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px }
-.header h1{ font-size:1.05rem; margin:0; color:#fff }
-.header .stats{ display:flex; gap:10px; align-items:center }
-.stat{ background:rgba(255,255,255,0.03); padding:6px 10px; border-radius:8px; font-weight:800; color:#fff }
+/* left title area (sun icon preserved if you had it) */
+header > div:first-child{font-size:0.95rem;color:rgba(255,255,255,0.96);display:flex;gap:10px;align-items:center}
+/* header links: clear contrast and no white background */
+header a{ color:#fff; text-decoration:none; padding:8px 10px; border-radius:8px;
+  background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.04); font-weight:700; }
 
-/* viewer */
+/* ensure content sits below fixed header */
+.wrap{ margin-top: calc(var(--header-height) + 12px); }
+
+/* ---------- MAIN WRAP (soft sand, no layout changes) ---------- */
+.wrap {
+  /* REMOVE margin-top: calc(var(--header-height) + 12px); */
+  
+  /* Keep these: */
+  width: min(1100px, 96vw);
+  border-radius: 12px;
+  padding: 14px;
+  background: linear-gradient(180deg, var(--card) 0%, #fbf3e6 100%);
+  box-shadow: 0 16px 48px rgba(9, 40, 40, 0.06);
+  border: 1px solid rgba(6, 80, 80, 0.04);
+  transition: background .35s, box-shadow .35s, border-color .35s;
+
+  /* NEW MARGIN SETTING */
+  margin: 0 auto; /* This centers the box horizontally only */
+}
+
+/* inner header row inside wrap */
+.wrap .header{ display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px }
+.wrap .header h1{ font-size:1.05rem;margin:0;color:#05393a }
+.wrap .header .stats{ display:flex; gap:10px; align-items:center }
+.stat{ background: rgba(11,122,120,0.06); padding:6px 10px; border-radius:8px; font-weight:800; color:#074b48 }
+
+/* ---------- VIEWER (sky frame) ---------- */
 .viewer{ display:flex; gap:10px; align-items:center; justify-content:center; margin-bottom:12px; flex-wrap:wrap }
-.vbtn{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:800; transition: transform .12s, box-shadow .2s; }
+.vbtn{ background:transparent; color:var(--muted); border:1px solid rgba(5,50,50,0.06); padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:800; transition: transform .12s, box-shadow .12s; }
 .vbtn:hover{ transform: translateY(-3px) }
 .imgWrap{
-  width: 800px;
-  max-width: 90vw;
-  height: 500px;
-  overflow: auto;
-  background:#02030a;
-  border-radius:10px;
-  display:flex;
-  align-items:flex-start;
-  justify-content:flex-start;
-  border: 1px solid var(--accent);
-  transition: border-color .45s ease, box-shadow .45s ease, background .45s ease, transform .45s ease;
-  will-change: transform;
+  width:800px; max-width:90vw; height:500px; overflow:auto;
+  background: linear-gradient(180deg, rgba(183,236,239,0.18), rgba(255,255,255,0.45));
+  border-radius:10px; display:flex; align-items:flex-start; justify-content:flex-start;
+  border: 1px solid rgba(11,122,120,0.08);
+  transition: border-color .35s ease, box-shadow .35s ease, background .35s ease;
 }
-.imgWrap img{ max-width: none; max-height: none; width: 100%; display:block; transition: transform .45s ease; }
+.imgWrap img{ width:100%; display:block; filter:none; }
 
 /* responsive */
 @media (max-width:880px){
- .answers{ grid-template-columns:1fr }
- .viewer{ flex-direction: column; }
- .imgWrap{ width: 100%; height: 350px; max-width: 100%; }
- .viewer-controls { width: 100%; justify-content: space-between; }
+  .viewer{ flex-direction:column }
+  .imgWrap{ width:100%; height:350px; max-width:100% }
+  .viewer-controls{ width:100%; justify-content:space-between }
 }
-.viewer-controls { display:flex; gap:8px; align-items:center; }
 
-/* answers */
-.answers{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px }
+/* ---------- ANSWERS (sand cards, readable text) ---------- */
+.answers{ display:grid; grid-template-columns: repeat(2,1fr); gap:12px }
 @media (max-width:880px){ .answers{ grid-template-columns:1fr } }
 .qcard{
-  background:var(--card); padding:12px; border-radius:10px;
-  border:1px solid rgba(255,255,255,0.02);
-  transition: background .45s, border-color .45s, box-shadow .45s, transform .45s;
+  background: linear-gradient(180deg, rgba(255,250,245,0.98), rgba(255,247,240,0.98));
+  padding:12px; border-radius:10px;
+  border:1px solid rgba(9,40,40,0.04);
+  transition: box-shadow .25s, transform .18s;
+  color:#05393a;
 }
-.qcard:hover{ transform: translateY(-4px) }
-.qhead{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:#eaf2ff; font-weight:800 }
+.qcard:hover{ transform: translateY(-4px); box-shadow: 0 10px 26px rgba(9,40,40,0.06) }
+.qhead{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; color:#05393a; font-weight:800 }
+
+/* options */
 .opts{ display:flex; gap:8px; flex-wrap:wrap }
-.opt{ padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.02); cursor:pointer; min-width:48px; text-align:center; font-weight:900; color:var(--muted); transition:transform .12s, background .35s, border-color .35s, box-shadow .35s; }
-.opt:hover{ transform:translateY(-4px) }
-.opt.selected{ outline:3px solid rgba(255,183,3,0.14); background:rgba(255,183,3,0.12); color:#fff }
-.opt.correct{ background:var(--ok); color:#fff; box-shadow:0 6px 18px rgba(30,105,63,0.16) }
-.opt.wrong{ background:var(--bad); color:#fff; box-shadow:0 6px 18px rgba(163,39,39,0.16) }
-.inputText { width:100%; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:var(--muted) }
+.opt{
+  padding:8px 12px; border-radius:10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,250,245,0.96));
+  border:1px solid rgba(6,40,40,0.04);
+  cursor:pointer; min-width:48px; text-align:center; font-weight:900; color:#05393a;
+  transition: transform .12s, box-shadow .12s, background .12s;
+}
+.opt:hover{ transform: translateY(-4px); box-shadow: 0 8px 20px rgba(255, 255, 255, 0.06) }
+.opt.selected{
+  outline:3px solid rgba(11,122,120,0.22);
+  background: linear-gradient(90deg,#b9f3e4,#dff7f9);
+  color:#05393a;
+}
 
-/* footer controls */
+.opt.correct{ background: var(--ok); color:#fff; box-shadow: 0 6px 18px rgba(30,105,63,0.08) }
+.opt.wrong{ background: var(--bad); color:#fff; box-shadow: 0 6px 18px rgba(163,39,39,0.08) }
+
+/* input & text results */
+.inputText{ width:100%; padding:8px; border-radius:8px; border:1px solid rgba(9,40,40,0.06); background: #fffaf3; color:#05393a }
+.textResult.badge{ margin-left:8px; padding:6px 8px; border-radius:8px; font-weight:800 }
+.textResult.correct{
+  background: linear-gradient(180deg,#2ec4a6,#1fa08a);
+  color:#043c3a;
+}
+
+.textResult.wrong{
+  background: linear-gradient(180deg,#ff7a7a,#e25555);
+  color:#fff5f5;
+}
+
+/* ---------- CONTROLS + MISC ---------- */
 .controls{ display:flex; justify-content:space-between; align-items:center; margin-top:12px; gap:8px }
-.btnPrimary{ background:linear-gradient(90deg,#ffb703,#ff9800); color:#111; font-weight:900; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; transition: transform .12s, box-shadow .25s; }
+.btnPrimary{ background: linear-gradient(90deg,var(--sun), #ff9b2e); color:#072226; font-weight:900; border:none; padding:10px 14px; border-radius:10px; cursor:pointer; transition: transform .12s, box-shadow .12s; }
 .btnPrimary:hover{ transform: translateY(-3px) }
-.btnGhost{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04); padding:8px 12px; border-radius:10px; cursor:pointer }
-.small{ font-size:0.92rem; color:#97a0b6 }
+.btnGhost{ background:transparent; color:var(--muted); border:1px solid rgba(6,40,40,0.06); padding:8px 12px; border-radius:10px; cursor:pointer }
+.small{ font-size:0.92rem; color:#6b7880 }
 .center{ display:flex; gap:8px; align-items:center }
-.finalBox{ text-align:center; padding:16px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.12)); border-radius:8px; margin-top:12px; transition: background .45s, border-color .45s }
-.note{ font-size:0.9rem; color:#a9b3c7 }
-.badge{ background:rgba(255,255,255,0.02); padding:6px 10px; border-radius:8px }
+.finalBox{ text-align:center; padding:16px; background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,250,245,0.98)); border-radius:8px; margin-top:12px; border:1px solid rgba(6,40,40,0.04) }
+.note{ font-size:0.9rem; color:#6b7880 }
+.badge{ background: rgba(183,236,239,0.12); padding:6px 10px; border-radius:8px; color:#055055 }
 
-/* header visuals - we won't change header during Second Chance */
-header { position: fixed; top: 0; left: 0; width: 100%; background: linear-gradient(90deg, #4d0d0d, #330044); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; font-size: 1.8em; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 9999; }
+/* cinematic overlay (warm sunrise colors, keeps visual) */
+#cinematic-overlay .cine-bar{ background: linear-gradient(90deg, rgba(255,214,171,0.98), rgba(255,182,103,0.98)); }
+.cine-title{ color:#ffffff; text-shadow:0 8px 22px rgba(255,214,171,0.10) }
 
-/* ---------- Second Chance (persisting) styles — NEW PALETTE (purple/amber) ---------- */
-/* Use a night-friendly purple/dark-maroon palette (no blue/green) */
-body.second-chance {
-  background: linear-gradient(120deg,#0a0710 0%, #120417 35%, #0c0310 100%);
-  color: #f6eefc;
-  transition: background .9s ease, color .6s;
-}
-
-/* wrap — persist look */
-.wrap.second-chance {
-  background: linear-gradient(180deg, rgba(14,6,18,0.92), rgba(8,3,12,0.92));
-  box-shadow:0 30px 80px rgba(8,2,12,0.82);
-  border-color: rgba(191,70,172,0.06);
-  color:#f6eefc;
+/* ---------- SECOND-CHANCE THEME : NIGHT MINT ---------- */
+body.second-chance{
+  background: radial-gradient(circle at top,#0f2a44 0%, #081a2a 60%, #050f18 100%);
+  color:#dff6f3;
 }
 
-/* override individual elements inside wrap so header unaffected */
-.wrap.second-chance .qcard {
-  background: linear-gradient(180deg, rgba(16,6,20,0.86), rgba(10,4,14,0.86));
-  border-color: rgba(191,70,172,0.06);
-  color:#f6eefc;
-  box-shadow: 0 8px 28px rgba(6,6,10,0.55);
-}
-.wrap.second-chance .imgWrap {
-  background: linear-gradient(180deg, rgba(12,5,18,0.95), rgba(8,3,12,0.95));
-  border-color: rgba(191,70,172,0.12);
-  box-shadow: inset 0 0 0 1px rgba(191,70,172,0.03);
-  transform: scale(1.01);
-}
-.wrap.second-chance .imgWrap img {
-  transform: scale(1.01);
-  transition: transform .9s cubic-bezier(.2,.9,.2,1);
+.wrap.second-chance{
+  background: linear-gradient(180deg,#0c2236,#0a1c2c);
+  border-color: rgba(72,255,215,0.25);
+  color:#dff6f3;
 }
 
-/* options look and micro-animations - purple/amber accent */
-.wrap.second-chance .opts .opt {
-  background: rgba(255,255,255,0.02);
-  border-color: rgba(255,255,255,0.03);
-  color: #f2e6fb;
-}
-.wrap.second-chance .opts .opt:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 10px 30px rgba(191,70,172,0.06); }
-.wrap.second-chance .opts .opt.selected {
-  outline-color: rgba(191,70,172,0.22);
-  background: linear-gradient(90deg, rgba(191,70,172,0.08), rgba(255,184,92,0.04));
-}
-.wrap.second-chance .finalBox {
-  background: linear-gradient(180deg, rgba(18,6,22,0.72), rgba(12,4,16,0.72));
-  border: 1px solid rgba(191,70,172,0.07);
-  color:#f6eefc;
-}
-.wrap.second-chance .stat, .wrap.second-chance .badge {
-  background: rgba(191,70,172,0.05);
-  color:#f8eefe;
-}
-.wrap.second-chance .btnGhost {
-  border-color: rgba(255,255,255,0.03);
-  color: #efe1fb;
-}
-.wrap.second-chance .btnPrimary {
-  background: linear-gradient(90deg, #ffb86b, #d06cbf);
-  color:#2b0b1e;
-  box-shadow: 0 8px 28px rgba(176,70,130,0.12);
+.wrap.second-chance .qcard{
+  background: linear-gradient(180deg,#0f2a44,#0b2236);
+  border-color: rgba(72,255,215,0.18);
+  color:#dff6f3;
 }
 
-/* subtle persistent change for correct/wrong in second-chance (still green/red) */
-/* make correct/wrong visibly green/red in second-chance mode */
-.wrap.second-chance .opt.correct {
-  background: var(--ok) !important;
-  color: #fff !important;
-  border-color: rgba(30,105,63,0.18);
-  box-shadow: 0 6px 18px rgba(30,105,63,0.22);
+/* options */
+.wrap.second-chance .opts .opt{
+  background: linear-gradient(180deg,#102f46,#0d253a);
+  border-color: rgba(72,255,215,0.22);
+  color:#cffff6;
 }
 
-.wrap.second-chance .opt.wrong {
-  background: var(--bad) !important;
-  color: #fff !important;
-  border-color: rgba(163,39,39,0.18);
-  box-shadow: 0 6px 18px rgba(163,39,39,0.22);
+.wrap.second-chance .opts .opt:hover{
+  background: linear-gradient(180deg,#123a55,#0f2e46);
 }
 
-/* intro animation (short + smooth) */
-.wrap.second-chance.intro {
-  animation: secondChanceIntro .72s ease both;
-}
-@keyframes secondChanceIntro {
-  0% { transform: scale(0.995) translateY(6px); opacity: 0; filter: blur(6px); }
-  60% { transform: scale(1.02) translateY(-4px); opacity: 1; filter: blur(0); }
-  100% { transform: scale(1) translateY(0); opacity: 1; filter: blur(0); }
+.wrap.second-chance .opts .opt.selected{
+  outline: 3px solid #48ffd7;
+  background: linear-gradient(180deg,#164f6d,#0f3f58);
+  color:#ffffff;
 }
 
-/* small helper to fade in finalBox when auto-starting second chance */
-.finalBox.reveal { animation: revealBox .42s ease both; }
-@keyframes revealBox { from{ opacity:0; transform: translateY(8px)} to{ opacity:1; transform:none } }
-
-/* lively micro-interactions: slight pulse on selected options */
-@keyframes softPulse {
-  0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-  50% { box-shadow: 0 10px 30px rgba(191,70,172,0.06); }
-  100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
-}
-.wrap.second-chance .opt.selected { animation: softPulse 1.6s ease-in-out infinite; }
-
-/* accessible focus styles */
-.opt:focus { outline: 2px dashed rgba(255,255,255,0.06); outline-offset: 4px; }
-
-/* ---------- Cinematic overlay for dramatic cutscene ---------- */
-/* overlay sits above everything and plays an animation, then is removed */
-#cinematic-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 99999;
-  pointer-events:none;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: rgba(0,0,0,0.0);
-}
-.cine-bar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 12vh;
-  background: rgba(6,4,6,0.94);
-  transform: translateY(-120%);
-  will-change: transform, opacity;
-}
-.cine-bar.bottom { bottom: 0; top: auto; transform: translateY(120%); }
-.cine-title {
-  z-index: 100000;
-  font-weight:900;
-  font-family: Inter, system-ui, Arial;
-  color: #fef6ff;
-  text-shadow: 0 10px 30px rgba(0,0,0,0.6);
-  font-size: clamp(28px, 6vw, 48px);
-  letter-spacing: 0.08em;
-  transform: scale(0.9) translateY(30px) skewX(-6deg);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-/* light sweep across the title */
-.cine-title:after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 100%);
-  transform: translateX(-120%);
-  opacity: 0.7;
+/* correct / wrong */
+.wrap.second-chance .opt.correct{
+  background: linear-gradient(180deg,#1fe0a3,#0fb37e);
+  color:#04261c;
 }
 
-/* small cinematic particle/glow below title */
-.cine-glow {
-  position:absolute;
-  width:60%;
-  height:10px;
-  bottom:40%;
-  left:50%; transform:translateX(-50%);
-  background: radial-gradient(closest-side, rgba(208,108,183,0.28), rgba(208,108,183,0));
-  filter: blur(14px);
-  opacity: 0;
+.wrap.second-chance .opt.wrong{
+  background: linear-gradient(180deg,#ff6b6b,#c83b3b);
+  color:#fff;
 }
 
-/* keyframes */
-@keyframes cine-bars-in {
-  0% { transform: translateY(-120%); }
-  60% { transform: translateY(6%); }
-  100% { transform: translateY(0); }
-}
-@keyframes cine-bars-in-bottom {
-  0% { transform: translateY(120%); }
-  60% { transform: translateY(-6%); }
-  100% { transform: translateY(0); }
-}
-@keyframes cine-title-in {
-  0% { opacity:0; transform: scale(0.88) translateY(36px) skewX(-6deg); }
-  60% { opacity:1; transform: scale(1.06) translateY(-8px) skewX(-2deg); }
-  100% { opacity:1; transform: scale(1) translateY(0) skewX(0deg); }
-}
-@keyframes cine-light-sweep {
-  0% { transform: translateX(-120%); }
-  60% { transform: translateX(30%); }
-  100% { transform: translateX(140%); }
-}
-@keyframes cine-glow {
-  0% { opacity:0; transform: scaleX(0.8) }
-  40% { opacity:1; transform: scaleX(1.05) }
-  100% { opacity:0; transform: scaleX(1) }
+/* stats & buttons */
+.wrap.second-chance .stat,
+.wrap.second-chance .badge{
+  background: rgba(72,255,215,0.18);
+  color:#7fffea;
 }
 
-/* helper to fade overlay out */
-@keyframes cine-fadeout { from{ opacity:1 } to{ opacity:0 } }
+.wrap.second-chance .btnPrimary{
+  background: linear-gradient(90deg,#48ffd7,#1fe0a3);
+  color:#04261c;
+}
+
+.wrap.second-chance .btnGhost{
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(72,255,215,0.22);
+  color:#bfffee;
+}
+opt.wrong{ background: linear-gradient(180deg,#bd5c5c,#a83f3f); color:#fff }
+
+/* accessibility focus */
+.opt:focus{ outline:2px dashed rgba(11,122,120,0.12); outline-offset:4px }
 
 
-.textResult.badge { margin-left: 8px; padding: 6px 8px; border-radius: 8px; font-weight: 800; }
-.textResult.correct { background: #1e693f; color: #fff; }
-.textResult.wrong   { background: #a32727; color: #fff; }
-/* ...existing styles... */
+
+
+
+/* FINAL RESULT BOX TEXT */
+.finalBox{
+  color: #000000; /* main text color */
+}
+
+/* Title: "All rounds complete 🎉" */
+.finalBox h3{
+  color: #0b7a78; /* headline color */
+}
+
+/* Sub text: "Total correct: 0 / 3" */
+.finalBox .small{
+  color: #000000;
+}
+
+/* Links / extra lines like "Review — All questions" */
+.finalBox a,
+.finalBox .note{
+  color: #000000;
+}
+
 </style>
 </head>
 <body>
@@ -314,7 +282,7 @@ body.second-chance {
     <div class="viewer-controls">
       <button class="vbtn" id="prevBtn">◀ Prev</button>
     </div>
-   <div class="imgWrap"><img id="viewerImg" src="assets/Ktpl-Img/1-ktpl.png" alt="q-img" onerror="this.style.filter='grayscale(1)';"></div>
+   <div class="imgWrap"><img id="viewerImg" src="assets/Ktpl-Img/1-ktpl.png" alt="q-img" ></div>
     <div class="viewer-controls">
       <button class="vbtn" id="nextBtn">Next ▶</button>
     </div>
@@ -353,17 +321,14 @@ body.second-chance {
 <audio id="sWrong" src="assets/sounds/Incorrect-1.ogg" preload="auto"></audio>
 
 <script>
-/* ---------------- CONFIG / DEMO POOL ----------------
- - Put your images in assets/M-images/ and name them like: 1-M.jpg, 2-M.jpg, ... (or .png)
- - TOTAL_Q should equal the number of images you have (e.g. 34)
- - PER_ROUND determines how many answer slots per round (10)
- - Fill POOL with your real question numbers and correct answers.
-*/
-const TOTAL_Q = 9;
+/* ------------------ Simplified Quiz Script (auto second-chance kept) ------------------ */
+
+const TOTAL_Q = 7;
 const PER_ROUND = 10;
 
+// --- Pool: edit as before ---
 const POOL = [
-{ number: 1, type: 'mcq', correct: 'C' },
+ { number: 1, type: 'mcq', correct: 'C' },
 { number: 2, type: 'mcq', correct: 'B' },
 { number: 3, type: 'mcq', correct: 'B' },
 { number: 4, type: 'mcq', correct: 'C' },
@@ -447,26 +412,21 @@ const POOL = [
 { number: 80, subject: 'C10-P-II', type: 'text', correct: 'S' },  { number: 90, subject: 'C20-P-II', type: 'text', correct: 'D' },
 
 ];
-
-// 👇 This goes OUTSIDE the array
+// stable uid
 POOL.forEach(q => q._uid = `${q.subject || 'General'}-${q.number}`);
-/* ---------------- state ---------------- */
-let shuffled = [];
-let batches = [];
-let currentBatchIndex = 0;
-let selections = {}; // map number -> selected (string for mcq/text, array for multi)
-let revealed = false;
-let accScore = 0;
-let viewIndex = 1;
 
-/* Second Chance (auto) state */
-let secondChanceMode = false;
-let mainWrongPool = [];  // collect wrong items during main run
-let secondChancePool = []; // pool of wrong items for second chance
+// --- Track attempts for final report ---
+const userAnswers = {}; 
+// userAnswers[number] = { firstAttempt, secondAttempt, correct, type, finalIsCorrect }
 
-/* ---------------- DOM ---------------- */
+// --- State ---
+let shuffled = [], batches = [], currentBatchIndex = 0;
+let selections = {}, revealed = false, accScore = 0, viewIndex = 1;
+let secondChanceMode = false, mainWrongPool = [], secondChancePool = [];
+
+// --- DOM ---
 const answersEl = document.getElementById('answers');
-const viewerImg = document.getElementById('viewerImg');
+const viewerImg  = document.getElementById('viewerImg');
 const viewerIndex = document.getElementById('viewerIndex');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
@@ -487,98 +447,86 @@ const sClick = document.getElementById('sClick');
 const sCorrect = document.getElementById('sCorrect');
 const sWrong = document.getElementById('sWrong');
 
-function play(el){ try{ el.currentTime=0; el.play(); }catch(e){} }
+function play(el){ try{ if(el) { el.currentTime = 0; el.play(); } }catch(e){} }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
 
-/* ---------------- pool/batch helpers ---------------- */
-// Prepare batches from any pool array. Keeps poolTotal display referencing the original POOL.length.
-function prepareFromPool(poolArr, reshuffle=true){
+/* ----------------- Pool / Batches ----------------- */
+function prepareFromPool(poolArr, reshuffle = true){
   poolTotalEl.textContent = POOL.length;
-  shuffled = [...poolArr];
+  shuffled = poolArr.slice();
   if(reshuffle) shuffle(shuffled);
   batches = [];
   for(let i=0;i<shuffled.length;i+=PER_ROUND) batches.push(shuffled.slice(i, i+PER_ROUND));
-  roundTotalEl.textContent = batches.length;
+  roundTotalEl.textContent = batches.length || 1;
   currentBatchIndex = 0;
 }
 
-/* initial prepare for main run */
 function prepareMain(){
-  accScore = 0;
-  accScoreEl.textContent = accScore;
-  mainWrongPool = [];
-  secondChanceMode = false;
-  // make sure any visual second-chance class is removed
+  accScore = 0; accScoreEl.textContent = accScore;
+  mainWrongPool = []; secondChanceMode = false;
   wrapEl.classList.remove('second-chance','intro');
   document.body.classList.remove('second-chance');
+  // clear previous userAnswers so report starts fresh for new run
+  for(const k in userAnswers) delete userAnswers[k];
   prepareFromPool(POOL, true);
 }
 
-/* ---------------- viewer ---------------- */
+/* ----------------- Viewer ----------------- */
+
+
 function updateViewer(){
   // load images from VatLy-Img named like: 1-vl.png, 2-vl.png, ...
   viewerImg.src = `assets/Ktpl-Img/${viewIndex}-ktpl.png`;
   viewerIndex.textContent = `Image ${viewIndex} / ${TOTAL_Q}`;
 }
 
-viewerImg.onerror = function(){
-  // if png missing try jpg variant, otherwise show grayscale
-  if(viewerImg.src && viewerImg.src.endsWith('.png')) {
-    viewerImg.src = viewerImg.src.replace('.png', '.jpg');
-    return;
-  }
-  // final fallback: keep the grayscale filter (no more attempts)
-  this.style.filter = 'grayscale(1)';
-};
 
 function attachViewer(){
   prevBtn.addEventListener('click', ()=>{ viewIndex = Math.max(1, viewIndex-1); updateViewer(); });
   nextBtn.addEventListener('click', ()=>{ viewIndex = Math.min(TOTAL_Q, viewIndex+1); updateViewer(); });
-  window.addEventListener('keydown', (e)=>{ if(e.key==='ArrowLeft'){ viewIndex=Math.max(1,viewIndex-1); updateViewer(); } if(e.key==='ArrowRight'){ viewIndex=Math.min(TOTAL_Q,viewIndex+1); updateViewer(); }});
+  window.addEventListener('keydown', e => {
+    if(e.key === 'ArrowLeft') { viewIndex = Math.max(1, viewIndex-1); updateViewer(); }
+    if(e.key === 'ArrowRight') { viewIndex = Math.min(TOTAL_Q, viewIndex+1); updateViewer(); }
+  });
 }
 
-/* ---------------- render batch ---------------- */
-/* ---------- Replace renderBatch() with this version ---------- */
+/* ----------------- Render Batch ----------------- */
 function renderBatch(){
   finalBoxHolder.innerHTML = '';
   revealed = false;
   selections = {};
   answersEl.innerHTML = '';
 
-  // safety
-  if(!batches || batches.length===0){
+  if(!batches || batches.length === 0){
     finalBoxHolder.innerHTML = `<div class="finalBox"><h3>No questions in this pool.</h3></div>`;
     return;
   }
 
   const batch = batches[currentBatchIndex];
-  roundIdxEl.textContent = currentBatchIndex+1;
+  roundIdxEl.textContent = currentBatchIndex + 1;
   perRoundEl.textContent = batch.length;
 
-  // set viewer to first question of this batch for convenience
+  // set viewer to first question in batch
   if(batch[0] && batch[0].number){ viewIndex = batch[0].number; updateViewer(); }
 
-  batch.forEach(item=>{
-    // make sure we have a stable uid on each item (you already add _uid when building POOL)
-    const uid = item._uid || `${item.subject || 'General'}-${item.number}`;
-
+  batch.forEach(item => {
+    const uid = item._uid;
     const card = document.createElement('div');
     card.className = 'qcard';
-    card.dataset.num = item.number;
     card.dataset.uid = uid;
+    card.dataset.num = item.number;
 
-    const typeLabel = item.type === 'mcq' ? 'MCQ' : item.type === 'multi' ? `Multi (max ${item.maxSelect})` : 'Text';
-    card.innerHTML = `<div class="qhead"><div>Q${item.number}${item.subject ? ' - ' + item.subject : ''}</div><div class="small">${typeLabel}</div></div>`;
+    const typeLabel = item.type === 'mcq' ? 'MCQ' : item.type === 'multi' ? `Multi (max ${item.maxSelect || 4})` : 'Text';
+    card.innerHTML = `<div class="qhead"><div>Q${item.number}${item.subject ? ' - '+item.subject : ''}</div><div class="small">${typeLabel}</div></div>`;
 
     if(item.type === 'text'){
       const input = document.createElement('input');
       input.className = 'inputText';
       input.placeholder = 'Type answer...';
-      // store selections by uid (not by number)
       input.addEventListener('input', ()=> {
         if(revealed) return;
-        const val = input.value.trim();
-        if(val.length>0) selections[uid] = val;
+        const v = input.value.trim();
+        if(v) selections[uid] = v;
         else delete selections[uid];
         updateSelectionState();
       });
@@ -586,39 +534,38 @@ function renderBatch(){
     } else {
       const opts = document.createElement('div');
       opts.className = 'opts';
-      ['A','B','C','D'].forEach(opt=>{
+      ['A','B','C','D'].forEach(letter => {
         const b = document.createElement('div');
         b.className = 'opt';
         b.tabIndex = 0;
-        b.textContent = opt;
-        b.addEventListener('click', ()=>{
+        b.textContent = letter;
+        b.addEventListener('click', ()=> {
           if(revealed) return;
           if(item.type === 'mcq'){
-            Array.from(opts.children).forEach(ch=> ch.classList.remove('selected'));
+            Array.from(opts.children).forEach(c=>c.classList.remove('selected'));
             b.classList.add('selected');
-            selections[uid] = opt;           // <- keyed by uid
+            selections[uid] = letter;
             play(sClick);
-          } else if(item.type === 'multi'){
-            const already = b.classList.contains('selected');
-            if(!already){
-              const cur = (selections[uid] || []);
-              if(cur.length >= (item.maxSelect||3)) {
+          } else { // multi
+            const sel = selections[uid] || [];
+            const has = b.classList.contains('selected');
+            if(!has){
+              if(sel.length >= (item.maxSelect||4)) {
                 b.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:220});
                 return;
               }
               b.classList.add('selected');
-              selections[uid] = [...(selections[uid] || []), opt];
+              selections[uid] = [...sel, letter];
             } else {
               b.classList.remove('selected');
-              selections[uid] = (selections[uid] || []).filter(x=>x!==opt);
+              selections[uid] = sel.filter(x=>x!==letter);
               if(selections[uid].length===0) delete selections[uid];
             }
             play(sClick);
           }
           updateSelectionState();
         });
-        // keyboard accessibility
-        b.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); b.click(); } });
+        b.addEventListener('keydown', ev => { if(ev.key==='Enter' || ev.key===' ') { ev.preventDefault(); b.click(); } });
         opts.appendChild(b);
       });
       card.appendChild(opts);
@@ -627,319 +574,259 @@ function renderBatch(){
   });
 
   updateSelectionState();
-  nextBtnRound.style.display='none';
+  nextBtnRound.style.display = 'none';
   confirmBtn.disabled = true;
 }
 
-
-/* ---------------- update state ---------------- */
+/* ----------------- State helpers ----------------- */
 function updateSelectionState(){
   const answered = Object.keys(selections).length;
   selectedCountEl.textContent = answered;
-  const need = batches[currentBatchIndex].length;
-  confirmBtn.disabled = (answered < need) || revealed;
+  const need = batches[currentBatchIndex]?.length || 0;
+  confirmBtn.disabled = revealed || (answered < need);
 }
 
-/* ---------------- confirm/reveal logic ---------------- */
-/* ---------- Replace the confirm/reveal handler with this version ---------- */
+/* ----------------- Confirm / Reveal (records attempts for report) ----------------- */
 confirmBtn.addEventListener('click', ()=>{
-  // count selections against current batch length
-  if(Object.keys(selections).length < batches[currentBatchIndex].length) return alert('Answer all slots before confirming.');
+  if(Object.keys(selections).length < (batches[currentBatchIndex]?.length || 0)){
+    return alert('Answer all slots before confirming.');
+  }
   revealed = true;
   let roundScore = 0;
   const batch = batches[currentBatchIndex];
-
-  // collect wrongs for this batch (to later build mainWrongPool)
   const batchWrong = [];
 
-  batch.forEach(item=>{
-    const uid = item._uid || `${item.subject || 'General'}-${item.number}`;
+  batch.forEach(item => {
+    const uid = item._uid;
+    const qnum = item.number;
     const card = answersEl.querySelector(`.qcard[data-uid="${uid}"]`);
     if(!card) return;
 
-    // ---- TEXT ----
+    // ensure userAnswers entry exists
+    userAnswers[qnum] = userAnswers[qnum] || { firstAttempt: null, secondAttempt: null, correct: item.correct, type: item.type, finalIsCorrect: false };
+
     if(item.type === 'text'){
       const input = card.querySelector('.inputText');
-      const answer = (selections[uid]||'').toString().trim().toLowerCase();
+      const answer = (selections[uid]||'').toString().trim();
+      const answerLower = answer.toLowerCase();
       const correct = (item.correct||'').toString().trim();
-      const correctLower = correct.toLowerCase();
       input.disabled = true;
+      card.querySelectorAll('.textResult').forEach(n => n.remove());
 
-      // remove any prior result node
-      card.querySelectorAll('.textResult').forEach(n=>n.remove());
-
-      if(answer === correctLower){
-        // correct
+      const correctNow = (answerLower === correct.toLowerCase());
+      if(correctNow){
         input.style.borderColor = '#1e693f';
         input.style.boxShadow = '0 6px 18px rgba(30,105,63,0.12)';
-        roundScore++;
-        play(sCorrect);
-
-        // add a small 'Correct' badge next to the input for instant clarity
-        const okBadge = document.createElement('span');
-        okBadge.className = 'textResult badge correct';
-        okBadge.textContent = 'Correct';
-        input.insertAdjacentElement('afterend', okBadge);
-
+        roundScore++; play(sCorrect);
+        const ok = document.createElement('span'); ok.className='textResult badge correct'; ok.textContent='Correct'; input.insertAdjacentElement('afterend', ok);
       } else {
-        // wrong: style input, play sound, add to wrong pool
         input.style.borderColor = '#a32727';
         input.style.boxShadow = '0 6px 18px rgba(163,39,39,0.12)';
         play(sWrong);
         batchWrong.push(item);
-
-        // add a 'Wrong' badge
-        const wrongBadge = document.createElement('span');
-        wrongBadge.className = 'textResult badge wrong';
-        wrongBadge.textContent = 'Wrong';
-        input.insertAdjacentElement('afterend', wrongBadge);
-
-        // reveal correct answer under the input (keeps your existing UX)
-        const reveal = document.createElement('div');
-        reveal.className = 'note';
-        reveal.style.marginTop = '8px';
-        const label = document.createElement('strong');
-        label.textContent = 'Answer: ';
-        const val = document.createElement('span');
-        val.className = 'badge';
-        val.textContent = correct;
-        reveal.appendChild(label);
-        reveal.appendChild(val);
+        const wrongBadge = document.createElement('span'); wrongBadge.className='textResult badge wrong'; wrongBadge.textContent='Wrong'; input.insertAdjacentElement('afterend', wrongBadge);
+        const reveal = document.createElement('div'); reveal.className='note'; reveal.style.marginTop='8px';
+        reveal.innerHTML = `<strong>Answer: </strong><span class="badge">${correct}</span>`;
         card.appendChild(reveal);
       }
 
-    // ---- MCQ ----
-    } else if(item.type === 'mcq'){
-      const chosen = selections[uid];
-      const opts = card.querySelectorAll('.opt');
-      opts.forEach(optEl=>{
-        const v = optEl.textContent;
-        if(v === item.correct) optEl.classList.add('correct');
-        if(v === chosen && v !== item.correct) optEl.classList.add('wrong');
-        optEl.style.pointerEvents='none';
-      });
-      if(chosen === item.correct){
-        roundScore++;
-        play(sCorrect);
+      // record first/second attempts
+      if(!secondChanceMode){
+        if(userAnswers[qnum].firstAttempt == null) userAnswers[qnum].firstAttempt = answer || null;
       } else {
-        play(sWrong);
-        batchWrong.push(item);
+        userAnswers[qnum].secondAttempt = answer || null;
       }
+      // update final correctness (second chance will overwrite)
+      userAnswers[qnum].finalIsCorrect = !!correctNow;
 
-    // ---- MULTI ----
-    } else if(item.type === 'multi'){
-      const chosen = selections[uid] ? [...selections[uid]] : [];
-      const correctSet = (item.correct||[]).slice().sort();
-      const chosenSet = chosen.slice().sort();
+    } else if(item.type === 'mcq'){
+      const chosen = selections[uid] || null;
       const opts = card.querySelectorAll('.opt');
-      opts.forEach(optEl=>{
-        const v = optEl.textContent;
-        const isChosen = chosen.includes(v);
-        const isCorrect = item.correct.includes(v);
-        if(isCorrect) optEl.classList.add('correct');
-        if(isChosen && !isCorrect) optEl.classList.add('wrong');
-        optEl.style.pointerEvents='none';
-      });
-      const eq = (a,b) => a.length===b.length && a.every((v,i)=>v===b[i]);
-      if(eq(correctSet, chosenSet)){
-        roundScore++;
-        play(sCorrect);
+      opts.forEach(o => { const v = o.textContent; if(v === item.correct) o.classList.add('correct'); if(v===chosen && v!==item.correct) o.classList.add('wrong'); o.style.pointerEvents='none'; });
+      const correctNow = (chosen === item.correct);
+      if(correctNow){ roundScore++; play(sCorrect); } else { play(sWrong); batchWrong.push(item); }
+
+      if(!secondChanceMode){
+        if(userAnswers[qnum].firstAttempt == null) userAnswers[qnum].firstAttempt = chosen;
       } else {
-        play(sWrong);
-        batchWrong.push(item);
+        userAnswers[qnum].secondAttempt = chosen;
       }
+      userAnswers[qnum].finalIsCorrect = !!correctNow;
+
+    } else if(item.type === 'multi'){
+      const chosen = (selections[uid]||[]).slice().sort();
+      const correctSet = (item.correct||[]).slice().sort();
+      const opts = card.querySelectorAll('.opt');
+      opts.forEach(o => {
+        const v = o.textContent;
+        const isChosen = (selections[uid]||[]).includes(v);
+        const isCorrect = (item.correct||[]).includes(v);
+        if(isCorrect) o.classList.add('correct');
+        if(isChosen && !isCorrect) o.classList.add('wrong');
+        o.style.pointerEvents='none';
+      });
+      const equal = (a,b)=> a.length===b.length && a.every((v,i)=>v===b[i]);
+      const correctNow = equal(correctSet, chosen);
+      if(correctNow){ roundScore++; play(sCorrect); } else { play(sWrong); batchWrong.push(item); }
+
+      if(!secondChanceMode){
+        if(userAnswers[qnum].firstAttempt == null) userAnswers[qnum].firstAttempt = chosen.length ? chosen : null;
+      } else {
+        userAnswers[qnum].secondAttempt = chosen.length ? chosen : null;
+      }
+      userAnswers[qnum].finalIsCorrect = !!correctNow;
     }
   });
 
-  // If main run (not second chance) collect wrongs for second-chance pool
-  if(!secondChanceMode && batchWrong.length>0){
-    mainWrongPool.push(...batchWrong);
-  }
-
-  accScore += roundScore;
-  accScoreEl.textContent = accScore;
+  if(!secondChanceMode && batchWrong.length) mainWrongPool.push(...batchWrong);
+  accScore += roundScore; accScoreEl.textContent = accScore;
 
   if(currentBatchIndex < batches.length - 1){
-    nextBtnRound.style.display='inline-block';
+    nextBtnRound.style.display = 'inline-block';
   } else {
-    // End of current pool
-    if(!secondChanceMode){
-      // Main run finished — auto start second chance if there are wrongs
-      if(mainWrongPool.length > 0){
-        // small delay so user sees final reveal, then auto trigger second chance
-        setTimeout(()=> {
-          triggerSecondChanceAuto(mainWrongPool);
-        }, 650);
-      } else {
-        // no wrongs — final screen
-        showFinal();
-      }
+    if(!secondChanceMode && mainWrongPool.length > 0){
+      setTimeout(()=> triggerSecondChanceAuto(mainWrongPool), 650);
     } else {
-      // was second chance pool end
-      showFinal(); // final summary
+      showFinal();
     }
   }
 
   confirmBtn.disabled = true;
 });
 
-
-/* ---------------- second chance flow ---------------- */
-/* dedupe by question number */
+/* ----------------- Second-chance flow (auto) ----------------- */
 function dedupeByNumber(arr){
   const map = {};
-  arr.forEach(it=> map[it.number] = it);
+  arr.forEach(it => map[it.number] = it);
   return Object.values(map);
 }
 
-/* Create cinematic overlay DOM, play animation, then call `onComplete` */
 function playCinematicOverlay(onComplete){
-  // build overlay
   const overlay = document.createElement('div');
   overlay.id = 'cinematic-overlay';
+  overlay.style.position = 'fixed'; overlay.style.inset='0'; overlay.style.zIndex='99999';
+  overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center';
+  overlay.style.pointerEvents='none';
+
+  // NOTE: title uses a readable color
   overlay.innerHTML = `
-    <div class="cine-bar top" style="top:0;"></div>
-    <div class="cine-bar bottom"></div>
-    <div class="cine-title">SECOND CHANCE</div>
-    <div class="cine-glow"></div>
+    <div class="cine-bar top" style="position:absolute;left:0;right:0;height:12vh;top:0;background:rgba(0,0,0,0.85);transform:translateY(-120%);"></div>
+    <div class="cine-bar bottom" style="position:absolute;left:0;right:0;height:12vh;bottom:0;background:rgba(0,0,0,0.85);transform:translateY(120%);"></div>
+    <div class="cine-title" style="color:#05393a;font-weight:900;font-size:32px;opacity:0;transform:translateY(32px);">SECOND CHANCE</div>
   `;
   document.body.appendChild(overlay);
 
-  const topBar = overlay.querySelector('.cine-bar.top');
-  const bottomBar = overlay.querySelector('.cine-bar.bottom');
+  const top = overlay.querySelector('.cine-bar.top');
+  const bottom = overlay.querySelector('.cine-bar.bottom');
   const title = overlay.querySelector('.cine-title');
-  const glow = overlay.querySelector('.cine-glow');
 
-  // animate bars in
-  topBar.style.animation = 'cine-bars-in .72s cubic-bezier(.2,.9,.2,1) forwards';
-  bottomBar.style.animation = 'cine-bars-in-bottom .72s cubic-bezier(.2,.9,.2,1) forwards';
-  title.style.animation = 'cine-title-in .85s cubic-bezier(.16,.9,.3,1) .18s forwards';
-  glow.style.animation = 'cine-glow .95s ease .18s forwards';
-  // start a light sweep after a bit (manually animate pseudo via setting :after via class)
-  setTimeout(()=> {
-    title.style.setProperty('--light','1');
-    // animate the pseudo by adding a tiny style element that animates :after
-    const lightSweep = document.createElement('style');
-    lightSweep.id = 'cine-sweep-style';
-    lightSweep.textContent = `
-      #cinematic-overlay .cine-title:after{
-        animation: cine-light-sweep 0.9s cubic-bezier(.2,.9,.2,1) .36s forwards;
-      }
-    `;
-    document.head.appendChild(lightSweep);
-  }, 300);
+  top.animate([{transform:'translateY(-120%)'},{transform:'translateY(6%)'},{transform:'translateY(0)'}], { duration:720, easing:'cubic-bezier(.2,.9,.2,1)', fill:'forwards' });
+  bottom.animate([{transform:'translateY(120%)'},{transform:'translateY(-6%)'},{transform:'translateY(0)'}], { duration:720, easing:'cubic-bezier(.2,.9,.2,1)', fill:'forwards' });
+  title.animate([{opacity:0, transform:'translateY(36px)'},{opacity:1, transform:'translateY(0)'}], { duration:850, easing:'cubic-bezier(.16,.9,.3,1)', delay:180, fill:'forwards' });
 
-  // total cinematic duration — keep it long-ish but not annoying (1.6s visible + fade)
-  const totalDuration = 1600;
-  setTimeout(()=> {
-    // fade overlay out smoothly
-    overlay.style.animation = 'cine-fadeout .38s ease forwards';
-    // after fade remove overlay and call onComplete
-    setTimeout(()=>{
-      try{ document.getElementById('cine-sweep-style')?.remove(); }catch(e){}
-      overlay.remove();
-      if(typeof onComplete === 'function') onComplete();
-    }, 420);
-  }, totalDuration);
+  const duration = 1400;
+  setTimeout(()=>{
+    overlay.animate([{opacity:1},{opacity:0}], { duration:380, fill:'forwards' });
+    setTimeout(()=> { overlay.remove(); if(onComplete) onComplete(); }, 420);
+  }, duration);
 }
 
-/* Triggered automatically at end of main run */
 function triggerSecondChanceAuto(wrongArr){
   const deduped = dedupeByNumber(wrongArr);
-  if(deduped.length === 0) { showFinal(); return; }
+  if(!deduped.length) { showFinal(); return; }
 
-  // play cinematic overlay then set second-chance visuals + load pool
   playCinematicOverlay(()=> {
-    // Persist theme: add the classes to body and wrap
     document.body.classList.add('second-chance');
     wrapEl.classList.add('second-chance','intro');
-
-    // remove the intro class after the intro animation so only persistent styles remain
     setTimeout(()=> wrapEl.classList.remove('intro'), 900);
 
-    // Prepare second chance pool from deduped items
-    secondChancePool = deduped.map(x => ({ ...x }));
+    secondChancePool = deduped.map(x => ({...x}));
     secondChanceMode = true;
-    // prepare batches from secondChancePool (reshuffle to mix)
     prepareFromPool(secondChancePool, true);
 
-    // show an intermediate finalBox that explains second chance then auto start
-    finalBoxHolder.innerHTML = `<div class="finalBox reveal">
-      <h3>Second Chance — Retry Wrong Questions 🔁</h3>
-      <p class="small">You had <strong>${secondChancePool.length}</strong> missed question(s). Re-attempt them now.</p>
-      <p class="small" style="margin-top:8px">The UI changed to Second Chance mode (night-friendly theme). Good luck!</p>
-    </div>`;
-    // small pause so user reads message then render first batch
-    setTimeout(()=> {
-      renderBatch();
-    }, 700);
+    finalBoxHolder.innerHTML = `<div class="finalBox reveal"><h3>Second Chance — Retry Wrong Questions 🔁</h3><p class="small">You had <strong>${secondChancePool.length}</strong> missed question(s). Re-attempt them now.</p></div>`;
+    setTimeout(()=> renderBatch(), 700);
   });
 }
 
-/* ---------------- next / retry / reshuffle ---------------- */
-nextBtnRound.addEventListener('click', ()=>{
-  currentBatchIndex++;
-  renderBatch();
-});
+/* ----------------- Next / Retry / Reshuffle ----------------- */
+nextBtnRound.addEventListener('click', ()=>{ currentBatchIndex++; renderBatch(); });
 retrySameBtn.addEventListener('click', ()=> renderBatch());
-reshuffleAllBtn.addEventListener('click', ()=>{
-  if(secondChanceMode){
-    // reshuffle second chance pool
-    prepareFromPool(secondChancePool, true);
-    renderBatch();
-  } else {
-    // full restart main
-    prepareMain();
-    renderBatch();
-    viewIndex = 1; updateViewer();
-  }
+reshuffleAllBtn.addEventListener('click', ()=> {
+  if(secondChanceMode){ prepareFromPool(secondChancePool, true); renderBatch(); }
+  else { prepareMain(); renderBatch(); viewIndex = 1; updateViewer(); }
 });
 
-/* ---------------- final summary ---------------- */
+/* ----------------- Final / Restart (includes review) ----------------- */
 function showFinal(){
-  // if the user never entered second chance, remove body/wrap second-chance class
-  if(!secondChanceMode){
-    wrapEl.classList.remove('second-chance');
-    document.body.classList.remove('second-chance');
-  } else {
-    // if they completed second-chance, keep the second-chance visuals (user asked to stay)
-    wrapEl.classList.add('second-chance');
-    document.body.classList.add('second-chance');
-  }
+  if(!secondChanceMode){ wrapEl.classList.remove('second-chance'); document.body.classList.remove('second-chance'); }
+  else { wrapEl.classList.add('second-chance'); document.body.classList.add('second-chance'); }
 
   finalBoxHolder.innerHTML = `<div class="finalBox reveal">
     <h3>All rounds complete 🎉</h3>
     <p class="small">Total correct: <strong>${accScore}</strong> / ${POOL.length}</p>
-    <div style="margin-top:10px; display:flex; gap:8px; justify-content:center">
+    <div style="margin-top:10px;display:flex;gap:8px;justify-content:center">
       <button class="btnPrimary" id="restartSame">Restart (same order)</button>
       <button class="btnGhost" id="restartShuffle">Restart (reshuffle)</button>
     </div>
   </div>`;
-  document.getElementById('restartSame').addEventListener('click', ()=>{
-    // restart full original pool same order — clear second-chance visuals on restart
-    secondChanceMode = false;
-    mainWrongPool = [];
-    wrapEl.classList.remove('second-chance');
-    document.body.classList.remove('second-chance');
-    prepareFromPool(POOL, false);
-    accScore = 0; accScoreEl.textContent = accScore;
-    renderBatch();
+  document.getElementById('restartSame').addEventListener('click', ()=> {
+    secondChanceMode = false; mainWrongPool = [];
+    wrapEl.classList.remove('second-chance'); document.body.classList.remove('second-chance');
+    prepareFromPool(POOL, false); accScore = 0; accScoreEl.textContent = accScore; renderBatch();
   });
-  document.getElementById('restartShuffle').addEventListener('click', ()=>{
-    prepareMain();
-    renderBatch();
-  });
+  document.getElementById('restartShuffle').addEventListener('click', ()=> { prepareMain(); renderBatch(); });
+
+  // show the review table below the final box
+  showReview();
 }
 
-/* ---------------- boot ---------------- */
+/* ----------------- Build Review Panel ----------------- */
+function showReview(){
+  // remove any existing review
+  const existing = document.getElementById('review-panel');
+  if(existing) existing.remove();
+
+  const review = document.createElement('div');
+  review.id = 'review-panel';
+  review.style.marginTop = '12px';
+
+  let correctCount = 0;
+  let rows = '';
+
+  // Show every POOL item (original order)
+  POOL.forEach(q => {
+    const ua = userAnswers[q.number] || { firstAttempt: null, secondAttempt: null, finalIsCorrect: false };
+    const first = ua.firstAttempt == null ? '<em>—</em>' : (Array.isArray(ua.firstAttempt) ? ua.firstAttempt.join(', ') : ua.firstAttempt);
+    const second = ua.secondAttempt == null ? '' : (Array.isArray(ua.secondAttempt) ? ua.secondAttempt.join(', ') : ua.secondAttempt);
+    const correct = Array.isArray(q.correct) ? q.correct.join(', ') : q.correct;
+    const finalCorrect = !!ua.finalIsCorrect;
+    if(finalCorrect) correctCount++;
+
+    const badgeHTML = finalCorrect ? `<span class="badge" style="background:#1e693f;color:#fff;padding:6px 10px;border-radius:8px;font-weight:800">Correct</span>` : `<span class="badge" style="background:#a32727;color:#fff;padding:6px 10px;border-radius:8px;font-weight:800">Wrong</span>`;
+
+    rows += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,250,245,0.96));border:1px solid rgba(6,40,40,0.04);margin-bottom:8px">
+      <div style="min-width:0">
+        <strong>Q${q.number}</strong>
+        <div class="small" style="margin-top:6px;color:var(--muted)">First: ${first} ${second ? `<span style="margin-left:8px">• 2nd: ${second}</span>` : ''} <span style="margin-left:12px">• Ans: ${correct}</span></div>
+      </div>
+      <div>${badgeHTML}</div>
+    </div>`;
+  });
+
+  review.innerHTML = `<div class="finalBox reveal" style="padding:12px"><h3>Review — All questions</h3>
+    <div style="margin-top:10px">${rows}</div>
+    <div style="margin-top:12px;text-align:center"><strong>Final correct: ${correctCount} / ${POOL.length}</strong></div>
+  </div>`;
+
+  finalBoxHolder.appendChild(review);
+}
+
+/* ----------------- Boot ----------------- */
 function boot(){
-  prepareMain();
-  attachViewer();
-  renderBatch();
-  updateViewer();
+  prepareMain(); attachViewer(); renderBatch(); updateViewer();
 }
 boot();
-
 
 </script>
 </body>
